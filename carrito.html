@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Carrito - Hardware Express</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <h1 onclick="window.location.href='index.html'" style="cursor:pointer;">Hardware Express 🇻🇪</h1>
+            <div class="carrito-icono" onclick="window.location.href='index.html'">
+                Volver al Catálogo 📦
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <h2>Resumen de tu Pedido</h2>
+        
+        <!-- Aquí se listarán los productos agregados -->
+        <div id="lista-carrito" class="lista-carrito-contenedor"></div>
+
+        <!-- Sección del Total y Checkout -->
+        <div class="resumen-checkout">
+            <h3>Total a Pagar: <span id="precio-total">$0</span></h3>
+            <p class="nota-pago">* El pago se acordará por WhatsApp (Pago Móvil, Zelle o Binance Pay).</p>
+            <button class="btn-checkout" onclick="enviarPedidoWhatsApp()">Confirmar Pedido por WhatsApp 📲</button>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Hardware Express. Alojado gratis en GitHub Pages.</p>
+    </footer>
+
+    <!-- Cargamos los mismos scripts para mantener la lógica conectada -->
+    <script src="js/productos.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Ejecutamos la función de renderizar el carrito solo si estamos en esta página
+        renderizarListaCarrito();
+    </script>
+</body>
+</html>

@@ -1,0 +1,227 @@
+/* --- Variables de Color y Configuración General --- */
+:root {
+    --color-principal: #0f172a; /* Azul oscuro / Slate */
+    --color-acento: #2563eb;    /* Azul brillante para botones */
+    --color-acento-hover: #1d4ed8;
+    --color-fondo: #f8fafc;     /* Blanco grisáceo para el fondo */
+    --color-tarjeta: #ffffff;   /* Blanco puro para los productos */
+    --texto-oscuro: #1e293b;
+    --texto-mutado: #64748b;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--color-fondo);
+    color: var(--texto-oscuro);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* --- Header / Navegación --- */
+header {
+    background-color: var(--color-principal);
+    color: white;
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.carrito-icono {
+    background-color: var(--color-acento);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.carrito-icono:hover {
+    background-color: var(--color-acento-hover);
+}
+
+/* --- Cuerpo Principal --- */
+main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    flex: 1;
+    width: 100%;
+}
+
+main h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+}
+
+/* --- Grid de Productos (Diseño Responsivo) --- */
+.productos-grid {
+    display: grid;
+    /* Crea columnas automáticas de mínimo 280px */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+/* --- Tarjeta de Producto --- */
+.producto-tarjeta {
+    background-color: var(--color-tarjeta);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.producto-tarjeta:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.producto-tarjeta img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover; /* Evita que la imagen se deforme */
+    background-color: #e2e8f0;
+}
+
+.producto-tarjeta h3 {
+    font-size: 1.2rem;
+    padding: 1rem 1rem 0.5rem 1rem;
+}
+
+.producto-tarjeta .descripcion {
+    color: var(--texto-mutado);
+    font-size: 0.9rem;
+    padding: 0 1rem;
+    line-height: 1.4;
+    flex: 1; /* Empuja el precio y botón hacia abajo para alinearlos */
+}
+
+.producto-tarjeta .precio {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--color-principal);
+    padding: 1rem;
+}
+
+.btn-agregar {
+    background-color: var(--color-acento);
+    color: white;
+    border: none;
+    padding: 0.8rem;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.2s;
+}
+
+.btn-agregar:hover {
+    background-color: var(--color-acento-hover);
+}
+
+/* --- Footer --- */
+footer {
+    background-color: #0f172a;
+    color: #94a3b8;
+    text-align: center;
+    padding: 1.5rem;
+    margin-top: auto;
+    font-size: 0.9rem;
+}/* --- Estilos para la página del Carrito --- */
+.lista-carrito-contenedor {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.item-carrito {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.item-carrito:last-child {
+    border-bottom: none;
+}
+
+.item-detalles h4 {
+    font-size: 1.1rem;
+    margin-bottom: 0.2rem;
+}
+
+.item-detalles p {
+    color: var(--texto-mutated);
+    font-size: 0.9rem;
+}
+
+.btn-eliminar {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-eliminar:hover {
+    background: #dc2626;
+}
+
+.resumen-checkout {
+    text-align: right;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.resumen-checkout h3 {
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
+}
+
+.nota-pago {
+    color: var(--texto-mutado);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.btn-checkout {
+    background-color: #22c55e; /* Verde WhatsApp */
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-checkout:hover {
+    background-color: #16a34a;}
