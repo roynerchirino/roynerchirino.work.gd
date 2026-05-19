@@ -78,29 +78,63 @@ function eliminarDelCarrito(id) {
     renderizarListaCarrito();
 }
 
-// 9. FUNCIÓN MÁGICA: Enviar el pedido estructurado a WhatsApp
+// 9. FUNCIÓN PARA MOSTRAR EL FORMULARIO
 function enviarPedidoWhatsApp() {
     if (carrito.length === 0) return alert("Tu carrito está vacío.");
+    document.getElementById('modalCRM').style.display = 'flex';
+}
 
-    const tuTelefono = "584120000000"; // ⚠️ REMPLAZA CON TU NÚMERO DE WHATSAPP REAL (Usa el código 58 de Venezuela sin el +)
+// 10. LÓGICA DE ENVÍO AL CRM (GOOGLE SHEETS)
+document.getElementById('btnConfirmarCRM').addEventListener('click', async () => {
+    const nombre = document.getElementById('nombreCliente').value;
+    const whatsapp = document.getElementById('telCliente').value;
     
-    let mensaje = "🛒 *NUEVO PEDIDO - HARDWARE EXPRESS* 🇻🇪\n\n";
-    mensaje += "Hola, me gustaría comprar los siguientes productos:\n";
-    mensaje += "---------------------------------------\n";
+    // ⚠️ AQUÍ PEGAS TU URL DE GOOGLE (la que termina en /exec)
+    const scriptURL = 'TU_URL_DE_GOOGLE_AQUÍ'; 
 
+    if (!nombre || !whatsapp) {
+        return alert("Por favor, completa los datos.");
+    }
+
+    const btn = document.getElementById('btnConfirmarCRM');
+    btn.innerText = "Procesando...";
+    btn.disabled = true;
+
+    let productosTexto = "";
     let totalGeneral = 0;
     carrito.forEach(item => {
-        const subtotal = item.precio * item.cantidad;
-        totalGeneral += subtotal;
-        mensaje += `▪️ *${item.nombre}*\n   Cantidad: ${item.cantidad} x $${item.precio} = *$${subtotal}*\n\n`;
+        productosTexto += `${item.nombre} (x${item.cantidad}), `;
+        totalGeneral += item.precio * item.cantidad;
     });
 
-    mensaje += "---------------------------------------\n";
-    mensaje += `💵 *TOTAL A PAGAR:* $${totalGeneral}\n\n`;
-    mensaje += "Por favor, indícame tus datos para concretar el Pago Móvil, Zelle o Binance Pay y coordinar la entrega. ¡Gracias!";
+    try {
+        await fetch(scriptURL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                nombre: nombre,
+                whatsapp: whatsapp,
+                productos: productosTexto,
+                total: totalGeneral
+            })
+        });
 
-    // Codificamos el texto para que WhatsApp lo reciba con espacios y negritas intactas
-    const urlWhatsApp = `https://api.whatsapp.com/send?phone=${tuTelefono}&text=${encodeURIComponent(mensaje)}`;
-    
-    // Abrimos el chat de WhatsApp en una pestaña nueva
-    window.open(urlWhatsApp, '_blank');}
+        // Pantalla de éxito
+        const modalDiv = document.querySelector('#modalCRM > div');
+        modalDiv.innerHTML = `
+            <div style="text-align:center;">
+                <h2 style="color:#00d1b2;">¡Orden Lista! ✅</h2>
+                <p>Hola <b>${nombre}</b>, hemos recibido tu pedido.</p>
+                <p>Te contactaremos pronto al <b>${whatsapp}</b> para la entrega.</p>
+                <button onclick="location.reload()" style="width:100%; padding:10px; background:#444; color:white; border:none; border-radius:6px; cursor:pointer; margin-top:15px;">Volver a la tienda</button>
+            </div>
+        `;
+        localStorage.removeItem('carrito');
+
+    } catch (error) {
+        alert("Error al conectar con el servidor.");
+        btn.disabled = false;
+        btn.innerText = "CONFIRMAR COMPRA";
+    }
+});
