@@ -1,49 +1,40 @@
+// 1. VARIABLES GLOBALES (Siempre al principio)
+let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+
+// 2. FUNCIÓN PARA EL CATÁLOGO
 function renderizarProductos() {
-    // Si el contenedor no existe (porque estás en el carrito.html), salimos de la función
-    if (!document.getElementById('contenedor-productos')) return; 
+    const contenedor = document.getElementById('contenedor-productos');
+    if (!contenedor) return; // Si no existe el contenedor (ej. estás en carrito.html), no hace nada
 
-    const contenedorProductos = document.getElementById('contenedor-productos');
-    contenedorProductos.innerHTML = "";
+    contenedor.innerHTML = "";
     
-    // ... el resto de tu código para mostrar productos
+    // Verificamos que el array 'productos' exista (viene de productos.js)
+    if (typeof productos !== 'undefined') {
+        productos.forEach(producto => {
+            const tarjeta = document.createElement('div');
+            tarjeta.classList.add('producto-tarjeta');
+            tarjeta.innerHTML = `
+                <img src="${producto.imagen}" alt="${producto.nombre}">
+                <h3>${producto.nombre}</h3>
+                <p class="descripcion">${producto.descripcion}</p>
+                <p class="precio">$${producto.precio}</p>
+                <button class="btn-agregar" onclick="agregarAlCarrito(${producto.id})">Agregar al Carrito</button>
+            `;
+            contenedor.appendChild(tarjeta);
+        });
+    }
 }
 
-    // Recorremos el array de productos (que viene de productos.js)
-    productos.forEach(producto => {
-        // Creamos el elemento de la tarjeta
-        const tarjeta = document.createElement('div');
-        tarjeta.classList.add('producto-tarjeta');
-
-        // Metemos el HTML interno de la tarjeta con los datos del producto
-        tarjeta.innerHTML = `
-            <img src="${producto.imagen}" alt="${producto.nombre}">
-            <h3>${producto.nombre}</h3>
-            <p class="descripcion">${producto.descripcion}</p>
-            <p class="precio">$${producto.precio}</p>
-            <button class="btn-agregar" onclick="agregarAlCarrito(${producto.id})">Agregar al Carrito</button>
-        `;
-
-        // Añadimos la tarjeta al contenedor principal
-        contenedorProductos.appendChild(tarjeta);
-    });
-}
-
-// Esta función se ejecutará por ahora cuando el cliente haga clic en "Agregar"
-function agregarAlCarrito(id) {
-    alert(`¡Producto con ID ${id} agregado! (Pronto programaremos la lógica real del carrito)`);
-}
-
-// Ejecutamos la función al cargar la página
-renderizarProductos();// 7. Renderizar la lista detallada dentro de carrito.html
+// 3. FUNCIÓN PARA LA PÁGINA DEL CARRITO (carrito.html)
 function renderizarListaCarrito() {
     const contenedorLista = document.getElementById('lista-carrito');
     const contenedorTotal = document.getElementById('precio-total');
     
-    if (!contenedorLista) return; // Si no estamos en carrito.html, no hace nada
+    if (!contenedorLista) return; 
 
-    let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-        contenedorLista.innerHTML = "<p style='text-align:center; padding:2rem; color:#64748b;'>Tu carrito está vacío. ¡Vuelve al catálogo para agregar productos!</p>";
-        contenedorTotal.innerText = "$0";
+    if (carrito.length === 0) {
+        contenedorLista.innerHTML = "<p style='text-align:center; padding:2rem; color:#64748b;'>Tu carrito está vacío.</p>";
+        if (contenedorTotal) contenedorTotal.innerText = "$0";
         return;
     }
 
@@ -53,62 +44,70 @@ function renderizarListaCarrito() {
     carrito.forEach(item => {
         const subtotal = item.precio * item.cantidad;
         totalGeneral += subtotal;
-
         const elemento = document.createElement('div');
         elemento.classList.add('item-carrito');
         elemento.innerHTML = `
             <div class="item-detalles">
                 <h4>${item.nombre}</h4>
-                <p>Precio: $${item.precio} x Unidades: ${item.cantidad}</p>
+                <p>Precio: $${item.precio} x ${item.cantidad}</p>
             </div>
-            <div style="display: flex; align-items: center; gap: 1.5rem;">
-                <span style="font-weight: bold; font-size: 1.1rem;">$${subtotal}</span>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <span style="font-weight: bold;">$${subtotal}</span>
                 <button class="btn-eliminar" onclick="eliminarDelCarrito(${item.id})">❌</button>
             </div>
         `;
         contenedorLista.appendChild(elemento);
     });
 
-    contenedorTotal.innerText = `$${totalGeneral}`;
+    if (contenedorTotal) contenedorTotal.innerText = `$${totalGeneral}`;
 }
 
-// 8. Función para eliminar un producto del carrito
-function eliminarDelCarrito(id) {
-    // Filtramos el array dejando fuera el ID que queremos borrar
-    carrito = carrito.filter(item => item.id !== id);
-    // Guardamos en localStorage y actualizamos la interfaz de la página actual
-    actualizarInterfaz();
-    renderizarListaCarrito();
-}
+// 4. LÓGICA DE AGREGAR Y ELIMINAR
+function agregarAlCarrito(id) {
+    const producto = productos.find(p => p.id === id);
+    const itemEnCarrito = carrito.find(item => item.id === id);
 
-// 9. FUNCIÓN PARA MOSTRAR EL FORMULARIO
-function enviarPedidoWhatsApp() {
-    if (carrito.length === 0) return alert("Tu carrito está vacío.");
-    document.getElementById('modalCRM').style.display = 'flex';
-}
-
-// 10. LÓGICA DE ENVÍO AL CRM (GOOGLE SHEETS)
-document.addEventListener('DOMContentLoaded', () => {
+    if (itemEnCarrito) {
+        itemEnCarrito.cantidad++;
+    } else {
+        carrito.push({ ...producto, cantidad: 1 });
+    }
     
-    const botonConfirmar = document.getElementById('btnConfirmarCRM');
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+    alert(`${producto.nombre} agregado con éxito ✅`);
+}
 
-    // Solo si el botón existe, activamos el click
+function eliminarDelCarrito(id) {
+    carrito = carrito.filter(item => item.id !== id);
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+    renderizarListaCarrito(); // Recargamos la lista visualmente
+}
+
+// 5. FUNCIÓN PARA EL MODAL (Botón "Finalizar Pedido")
+function enviarPedidoWhatsApp() {
+    if (carrito.length === 0) return alert("Agrega productos antes de finalizar.");
+    const modal = document.getElementById('modalCRM');
+    if (modal) modal.style.display = 'flex';
+}
+
+// 6. EVENTOS DE CARGA Y CRM (AL FINAL)
+document.addEventListener('DOMContentLoaded', () => {
+    // Ejecutamos las funciones según la página
+    renderizarProductos();
+    renderizarListaCarrito();
+
+    const botonConfirmar = document.getElementById('btnConfirmarCRM');
     if (botonConfirmar) {
         botonConfirmar.addEventListener('click', async () => {
             const nombre = document.getElementById('nombreCliente').value;
             const whatsapp = document.getElementById('telCliente').value;
-            
-            // Tu URL de Google (asegúrate que sea la que termina en /exec)
             const scriptURL = 'https://script.google.com/macros/s/AKfycbzI2_1quYoA9UT0ISASTw3nhQEg2uvkxXDRIX4jHIH17ayl2nyP1i8o6edbuzROY2EZ/exec'; 
 
-            if (!nombre || !whatsapp) {
-                return alert("Por favor, llena tu nombre y teléfono.");
-            }
+            if (!nombre || !whatsapp) return alert("Por favor, ingresa tu nombre y teléfono.");
 
             botonConfirmar.innerText = "Procesando...";
             botonConfirmar.disabled = true;
 
-            // Recopilamos datos del carrito
             let productosTexto = "";
             let totalGeneral = 0;
             carrito.forEach(item => {
@@ -129,20 +128,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     })
                 });
 
-                // Mensaje de éxito en el modal
                 const modalDiv = document.querySelector('#modalCRM > div');
-                modalDiv.innerHTML = `
-                    <div style="text-align:center;">
-                        <h2 style="color:#00d1b2;">¡Orden Enviada! ✅</h2>
-                        <p>Gracias <b>${nombre}</b>. Recibimos tu pedido.</p>
-                        <p>Te contactaremos pronto al <b>${whatsapp}</b>.</p>
-                        <button onclick="location.reload()" style="width:100%; padding:10px; background:#444; color:white; border:none; border-radius:6px; cursor:pointer; margin-top:15px;">Cerrar</button>
-                    </div>
-                `;
+                if (modalDiv) {
+                    modalDiv.innerHTML = `
+                        <div style="text-align:center;">
+                            <h2 style="color:#00d1b2;">¡Orden Recibida! ✅</h2>
+                            <p>Hola <b>${nombre}</b>, procesaremos tu pedido pronto.</p>
+                            <button onclick="location.reload()" style="width:100%; padding:10px; background:#444; color:white; border:none; border-radius:6px; cursor:pointer; margin-top:15px;">Regresar</button>
+                        </div>
+                    `;
+                }
                 localStorage.removeItem('carrito');
-
             } catch (error) {
-                alert("Error al conectar con el servidor.");
+                alert("Error de conexión. Intenta de nuevo.");
                 botonConfirmar.disabled = false;
                 botonConfirmar.innerText = "CONFIRMAR COMPRA";
             }
