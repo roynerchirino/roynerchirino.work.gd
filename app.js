@@ -90,7 +90,7 @@ document.getElementById('btnConfirmarCRM').addEventListener('click', async () =>
     const whatsapp = document.getElementById('telCliente').value;
     
     // ⚠️ AQUÍ PEGAS TU URL DE GOOGLE (la que termina en /exec)
-    const scriptURL = 'TU_URL_DE_GOOGLE_AQUÍ'; 
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzI2_1quYoA9UT0ISASTw3nhQEg2uvxkXDRlX4jHIH17ayl2nyP1i8o6edbuzROY2EZ/exec'; 
 
     if (!nombre || !whatsapp) {
         return alert("Por favor, completa los datos.");
