@@ -85,56 +85,64 @@ function enviarPedidoWhatsApp() {
 }
 
 // 10. LÓGICA DE ENVÍO AL CRM (GOOGLE SHEETS)
-document.getElementById('btnConfirmarCRM').addEventListener('click', async () => {
-    const nombre = document.getElementById('nombreCliente').value;
-    const whatsapp = document.getElementById('telCliente').value;
+document.addEventListener('DOMContentLoaded', () => {
     
-    // ⚠️ AQUÍ PEGAS TU URL DE GOOGLE (la que termina en /exec)
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzI2_1quYoA9UT0ISASTw3nhQEg2uvxkXDRlX4jHIH17ayl2nyP1i8o6edbuzROY2EZ/exec'; 
+    const botonConfirmar = document.getElementById('btnConfirmarCRM');
 
-    if (!nombre || !whatsapp) {
-        return alert("Por favor, completa los datos.");
-    }
+    // Solo si el botón existe, activamos el click
+    if (botonConfirmar) {
+        botonConfirmar.addEventListener('click', async () => {
+            const nombre = document.getElementById('nombreCliente').value;
+            const whatsapp = document.getElementById('telCliente').value;
+            
+            // Tu URL de Google (asegúrate que sea la que termina en /exec)
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbzI2_1quYoA9UT0ISASTw3nhQEg2uvkxXDRIX4jHIH17ayl2nyP1i8o6edbuzROY2EZ/exec'; 
 
-    const btn = document.getElementById('btnConfirmarCRM');
-    btn.innerText = "Procesando...";
-    btn.disabled = true;
+            if (!nombre || !whatsapp) {
+                return alert("Por favor, llena tu nombre y teléfono.");
+            }
 
-    let productosTexto = "";
-    let totalGeneral = 0;
-    carrito.forEach(item => {
-        productosTexto += `${item.nombre} (x${item.cantidad}), `;
-        totalGeneral += item.precio * item.cantidad;
-    });
+            botonConfirmar.innerText = "Procesando...";
+            botonConfirmar.disabled = true;
 
-    try {
-        await fetch(scriptURL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                nombre: nombre,
-                whatsapp: whatsapp,
-                productos: productosTexto,
-                total: totalGeneral
-            })
+            // Recopilamos datos del carrito
+            let productosTexto = "";
+            let totalGeneral = 0;
+            carrito.forEach(item => {
+                productosTexto += `${item.nombre} (x${item.cantidad}), `;
+                totalGeneral += item.precio * item.cantidad;
+            });
+
+            try {
+                await fetch(scriptURL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        nombre: nombre,
+                        whatsapp: whatsapp,
+                        productos: productosTexto,
+                        total: totalGeneral
+                    })
+                });
+
+                // Mensaje de éxito en el modal
+                const modalDiv = document.querySelector('#modalCRM > div');
+                modalDiv.innerHTML = `
+                    <div style="text-align:center;">
+                        <h2 style="color:#00d1b2;">¡Orden Enviada! ✅</h2>
+                        <p>Gracias <b>${nombre}</b>. Recibimos tu pedido.</p>
+                        <p>Te contactaremos pronto al <b>${whatsapp}</b>.</p>
+                        <button onclick="location.reload()" style="width:100%; padding:10px; background:#444; color:white; border:none; border-radius:6px; cursor:pointer; margin-top:15px;">Cerrar</button>
+                    </div>
+                `;
+                localStorage.removeItem('carrito');
+
+            } catch (error) {
+                alert("Error al conectar con el servidor.");
+                botonConfirmar.disabled = false;
+                botonConfirmar.innerText = "CONFIRMAR COMPRA";
+            }
         });
-
-        // Pantalla de éxito
-        const modalDiv = document.querySelector('#modalCRM > div');
-        modalDiv.innerHTML = `
-            <div style="text-align:center;">
-                <h2 style="color:#00d1b2;">¡Orden Lista! ✅</h2>
-                <p>Hola <b>${nombre}</b>, hemos recibido tu pedido.</p>
-                <p>Te contactaremos pronto al <b>${whatsapp}</b> para la entrega.</p>
-                <button onclick="location.reload()" style="width:100%; padding:10px; background:#444; color:white; border:none; border-radius:6px; cursor:pointer; margin-top:15px;">Volver a la tienda</button>
-            </div>
-        `;
-        localStorage.removeItem('carrito');
-
-    } catch (error) {
-        alert("Error al conectar con el servidor.");
-        btn.disabled = false;
-        btn.innerText = "CONFIRMAR COMPRA";
     }
 });
