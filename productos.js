@@ -11,7 +11,7 @@ const productos = [
         id: 2,
         nombre: "Procesador Intel Xeon E3-1230 v2",
         precio: 45,
-        imagen: "https://picsum.photos/seed/cpu/300/200",
+        imagen: "https://i.ebayimg.com/images/g/eygAAeSwq55p1~Iz/s-l1600.webp",
         descripcion: "Procesador de 4 núcleos y 8 hilos, ideal para socket LGA1155."
     },
     {
