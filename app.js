@@ -1,9 +1,12 @@
-const contenedorProductos = document.getElementById('contenedor-productos');
-
-// Función para mostrar los productos en el catálogo
 function renderizarProductos() {
-    // Limpiamos el contenedor por si acaso
+    // Si el contenedor no existe (porque estás en el carrito.html), salimos de la función
+    if (!document.getElementById('contenedor-productos')) return; 
+
+    const contenedorProductos = document.getElementById('contenedor-productos');
     contenedorProductos.innerHTML = "";
+    
+    // ... el resto de tu código para mostrar productos
+}
 
     // Recorremos el array de productos (que viene de productos.js)
     productos.forEach(producto => {
@@ -38,7 +41,7 @@ function renderizarListaCarrito() {
     
     if (!contenedorLista) return; // Si no estamos en carrito.html, no hace nada
 
-    if (carrito.length === 0) {
+    let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
         contenedorLista.innerHTML = "<p style='text-align:center; padding:2rem; color:#64748b;'>Tu carrito está vacío. ¡Vuelve al catálogo para agregar productos!</p>";
         contenedorTotal.innerText = "$0";
         return;
