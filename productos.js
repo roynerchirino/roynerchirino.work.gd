@@ -4,7 +4,7 @@ const productos = [
         nombre: "Memoria RAM DDR3 8GB Kingston",
         precio: 20,
         // Usa una imagen real o este generador estable:
-        imagen: "https://picsum.photos/seed/ram/300/200", 
+        imagen: "https://www.360.gt/wp-content/uploads/2016/11/KINGSTON-8GB-1600MHZ.jpg", 
         descripcion: "Memoria RAM de 8GB para actualización de sistemas de escritorio."
     },
     {
@@ -18,7 +18,7 @@ const productos = [
         id: 3,
         nombre: "Disco Sólido SSD 480GB Crucial",
         precio: 35,
-        imagen: "https://picsum.photos/seed/ssd/300/200",
+        imagen: "https://www.360.gt/wp-content/uploads/2018/12/CT480BX500SSD1-2.jpg",
         descripcion: "Unidad de estado sólido de alta velocidad para optimizar tu sistema."
     }
 ];
