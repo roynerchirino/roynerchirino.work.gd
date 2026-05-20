@@ -27,7 +27,7 @@ function renderizarProductos() {
 
 // 3. FUNCIÓN PARA LA PÁGINA DEL CARRITO (carrito.html)
 function renderizarListaCarrito() {
-    const contenedorLista = document.getElementById('lista-carrito');
+   const contenedorLista = document.getElementById('lista-carrito');
     const contenedorTotal = document.getElementById('precio-total');
     
     if (!contenedorLista) return; 
