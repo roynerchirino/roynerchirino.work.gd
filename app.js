@@ -170,6 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
 document.addEventListener('DOMContentLoaded', () => {
     const btnLogin = document.getElementById('btnLogin');
     
