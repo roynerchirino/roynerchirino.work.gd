@@ -170,3 +170,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+document.addEventListener('DOMContentLoaded', () => {
+    const btnLogin = document.getElementById('btnLogin');
+    
+    if (btnLogin) {
+        btnLogin.addEventListener('click', async () => {
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPass').value;
+
+            if (email === "" || pass === "") {
+                alert("Por favor, llena todos los campos");
+                return;
+            }
+
+            try {
+                // Intentar iniciar sesión
+                await firebase.auth().signInWithEmailAndPassword(email, pass);
+                alert("¡Bienvenido de nuevo!");
+                window.location.href = "index.html"; // Lo mandamos al catálogo
+            } catch (error) {
+                // Si el usuario no existe, intentamos registrarlo automáticamente (opcional)
+                // O simplemente mostramos el error:
+                alert("Error: " + error.message);
+            }
+        });
+    }
+});
