@@ -11,6 +11,17 @@ const firebaseConfig = {
 // Inicializar Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+
+// Función para registrar nuevos usuarios
+async function registrarUsuario(email, password) {
+    try {
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        alert("¡Cuenta creada con éxito! Bienvenido.");
+        window.location.href = "index.html"; // Lo mandamos al catálogo
+    } catch (error) {
+        alert("Error al registrar: " + error.message);
+    }
+}
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
 // 2. FUNCIÓN PARA EL CATÁLOGO
