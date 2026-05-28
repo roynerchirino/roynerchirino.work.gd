@@ -61,3 +61,44 @@
     <script src="app.js"></script>
 </body>
 </html>
+<!-- ... Aquí continúan tus estilos de la captura ... -->
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2 style="color: #00d1b2;">Hardware Express</h2>
+        <p>Inicia sesión para gestionar tus compras</p>
+        
+        <!-- Inputs con los IDs correctos para app.js -->
+        <input type="email" id="loginEmail" placeholder="Tu correo electrónico">
+        <input type="password" id="loginPass" placeholder="Tu contraseña">
+        
+        <button class="btn-login" id="btnLogin">ENTRAR</button>
+        <button class="btn-login btn-google" id="btnGoogle">Continuar con Google</button>
+        
+        <p style="margin-top: 20px;">¿No tienes cuenta? <a href="#" style="color: #00d1b2;">Regístrate aquí</a></p>
+    </div>
+
+    <!-- 1. Cargar las librerías de Firebase de forma compatible -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <!-- 2. Tu bloque de configuración que vimos en la Screenshot_836.png -->
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyBE0Sg4lTMfczh1nWnhp7YD1JePH6usOHA",
+          authDomain: "hardware-express-ve.firebaseapp.com",
+          projectId: "hardware-express-ve",
+          storageBucket: "hardware-express-ve.firebasestorage.app",
+          messagingSenderId: "551081609311",
+          appId: "1:551081609311:web:5e17e7b2ed5af122e033ea",
+          measurementId: "G-465FG63MF4"
+        };
+        // Inicializamos Firebase en esta vista
+        firebase.initializeApp(firebaseConfig);
+    </script>
+
+    <!-- 3. Tu archivo JavaScript general -->
+    <script src="app.js"></script>
+</body>
+</html>
