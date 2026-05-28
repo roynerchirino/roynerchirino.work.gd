@@ -1,4 +1,16 @@
-// 1. VARIABLES GLOBALES (Siempre al principio)
+const firebaseConfig = {
+  apiKey: "AIzaSyBE0Sg4lTMfczh1nWnhp7YD1JePH6usOHA",
+  authDomain: "hardware-express-ve.firebaseapp.com",
+  projectId: "hardware-express-ve",
+  storageBucket: "hardware-express-ve.firebasestorage.app",
+  messagingSenderId: "551081609311",
+  appId: "1:551081609311:web:5e17e7b2ed5af122e033ea",
+  measurementId: "G-465FG63MF4"
+};
+
+// Inicializar Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
 // 2. FUNCIÓN PARA EL CATÁLOGO
