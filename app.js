@@ -1,4 +1,4 @@
-const firebaseConfig = {
+const firebaseConfig = 
   apiKey: "AIzaSyBE0Sg4lTMfczh1nWnhp7YD1JePH6usOHA",
   authDomain: "hardware-express-ve.firebaseapp.com",
   projectId: "hardware-express-ve",
