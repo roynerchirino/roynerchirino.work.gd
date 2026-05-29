@@ -1,4 +1,4 @@
-const productos = [
+const productos = {
     {
         id: 1,
         nombre: "Memoria RAM DDR3 8GB Kingston",
