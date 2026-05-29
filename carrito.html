@@ -37,9 +37,15 @@
 
     <!-- Cargamos los mismos scripts para mantener la lógica conectada -->
     <script src="./productos.js"></script>
-<script src="./app.js"></script>
+<script src="./productos.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <script src="./app.js"></script>
+    
     <script>
-        // Ejecutamos la función de renderizar el carrito solo si estamos en esta página
+        // Esto ahora funcionará porque app.js ya estará cargado
         renderizarListaCarrito();
     </script>
 </body>
