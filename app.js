@@ -1,4 +1,4 @@
-const firebaseConfig = {
+const firebaseConfig = { ... };
   apiKey: "AIzaSyBE0Sg4lTMfczh1nWnhp7YD1JePH6usOHA",
   authDomain: "hardware-express-ve.firebaseapp.com",
   projectId: "hardware-express-ve",
@@ -11,6 +11,7 @@ const firebaseConfig = {
 // Inicializar Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
 // Función para registrar nuevos usuarios
 async function registrarUsuario(email, password) {
@@ -22,7 +23,6 @@ async function registrarUsuario(email, password) {
         alert("Error al registrar: " + error.message);
     }
 }
-let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
 // 2. FUNCIÓN PARA EL CATÁLOGO
 function renderizarProductos() {
