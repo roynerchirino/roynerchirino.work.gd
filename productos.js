@@ -1,4 +1,4 @@
-const productos = 
+const productos =[
     {
         id: 1,
         nombre: "Memoria RAM DDR3 8GB Kingston",
@@ -20,5 +20,5 @@ const productos =
         precio: 35,
         imagen: "https://www.360.gt/wp-content/uploads/2018/12/CT480BX500SSD1-2.jpg",
         descripcion: "Unidad de estado sólido de alta velocidad para optimizar tu sistema."
-    }
+    },
 ];
