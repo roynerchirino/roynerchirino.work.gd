@@ -1,37 +1,27 @@
-const firebaseConfig ={
-  apiKey: "AIzaSyBE0Sg4lTMfczh1nWnhp7YD1JePH6usOHA",
-  authDomain: "hardware-express-ve.firebaseapp.com",
-  projectId: "hardware-express-ve",
-  storageBucket: "hardware-express-ve.firebasestorage.app",
-  messagingSenderId: "551081609311",
-  appId: "1:551081609311:web:5e17e7b2ed5af122e033ea",
-  measurementId: "G-465FG63MF4"
+const firebaseConfig = {
+    apiKey: "AIzaSyBE0Sg4lTMfczh1nWnhp7YD1JePH6usOHA",
+    authDomain: "hardware-express-ve.firebaseapp.com",
+    projectId: "hardware-express-ve",
+    storageBucket: "hardware-express-ve.firebasestorage.app",
+    messagingSenderId: "551081609311",
+    appId: "1:551081609311:web:5e17e7b2ed5af122e033ea",
+    measurementId: "G-465FG63MF4"
 };
 
-// Inicializar Firebase
-firebase.initializeApp(firebaseConfig);
+// 1. Inicializar Firebase (Solo si no se ha inicializado antes)
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 const auth = firebase.auth();
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
-// Función para registrar nuevos usuarios
-async function registrarUsuario(email, password) {
-    try {
-        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-        alert("¡Cuenta creada con éxito! Bienvenido.");
-        window.location.href = "index.html"; // Lo mandamos al catálogo
-    } catch (error) {
-        alert("Error al registrar: " + error.message);
-    }
-}
-
-// 2. FUNCIÓN PARA EL CATÁLOGO
+// 2. FUNCIÓN PARA EL CATÁLOGO (index.html)
 function renderizarProductos() {
     const contenedor = document.getElementById('contenedor-productos');
-    if (!contenedor) return; // Si no existe el contenedor (ej. estás en carrito.html), no hace nada
+    if (!contenedor) return;
 
     contenedor.innerHTML = "";
     
-    // Verificamos que el array 'productos' exista (viene de productos.js)
     if (typeof productos !== 'undefined') {
         productos.forEach(producto => {
             const tarjeta = document.createElement('div');
@@ -50,7 +40,7 @@ function renderizarProductos() {
 
 // 3. FUNCIÓN PARA LA PÁGINA DEL CARRITO (carrito.html)
 function renderizarListaCarrito() {
-   const contenedorLista = document.getElementById('lista-carrito');
+    const contenedorLista = document.getElementById('lista-carrito');
     const contenedorTotal = document.getElementById('precio-total');
     
     if (!contenedorLista) return; 
@@ -87,38 +77,66 @@ function renderizarListaCarrito() {
 
 // 4. LÓGICA DE AGREGAR Y ELIMINAR
 function agregarAlCarrito(id) {
+    if (typeof productos === 'undefined') return;
     const producto = productos.find(p => p.id === id);
     const itemEnCarrito = carrito.find(item => item.id === id);
 
     if (itemEnCarrito) {
         itemEnCarrito.cantidad++;
     } else {
-        carrito.push({ ...producto, cantidad: 1 });
+        carrito.push({ ...producto, quantity: 1 }); // Usamos spread para no afectar el original
     }
     
     localStorage.setItem('carrito', JSON.stringify(carrito));
+    actualizarContadorCarrito();
     alert(`${producto.nombre} agregado con éxito ✅`);
 }
 
 function eliminarDelCarrito(id) {
     carrito = carrito.filter(item => item.id !== id);
     localStorage.setItem('carrito', JSON.stringify(carrito));
-    renderizarListaCarrito(); // Recargamos la lista visualmente
+    renderizarListaCarrito();
+    actualizarContadorCarrito();
 }
 
-// 5. FUNCIÓN PARA EL MODAL (Botón "Finalizar Pedido")
-function enviarPedidoWhatsApp() {
-    if (carrito.length === 0) return alert("Agrega productos antes de finalizar.");
-    const modal = document.getElementById('modalCRM');
-    if (modal) modal.style.display = 'flex';
+function actualizarContadorCarrito() {
+    const contador = document.getElementById('contador-carrito');
+    if (contador) {
+        const totalItems = carrito.reduce((total, item) => total + (item.cantidad || 1), 0);
+        contador.innerText = totalItems;
+    }
 }
 
-// 6. EVENTOS DE CARGA Y CRM (AL FINAL)
+// 5. EVENTOS PRINCIPALES (DOMContentLoaded)
 document.addEventListener('DOMContentLoaded', () => {
-    // Ejecutamos las funciones según la página
+    // Renderizado inicial
     renderizarProductos();
     renderizarListaCarrito();
+    actualizarContadorCarrito();
 
+    // --- LÓGICA DE LOGIN ---
+    const btnLogin = document.getElementById('btnLogin');
+    if (btnLogin) {
+        btnLogin.addEventListener('click', async () => {
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPass').value;
+
+            if (!email || !pass) {
+                alert("Por favor, llena todos los campos");
+                return;
+            }
+
+            try {
+                await auth.signInWithEmailAndPassword(email, pass);
+                alert("¡Bienvenido de nuevo a Hardware Express!");
+                window.location.href = "index.html";
+            } catch (error) {
+                alert("Error: " + error.message);
+            }
+        });
+    }
+
+    // --- LÓGICA DE CRM / PEDIDOS ---
     const botonConfirmar = document.getElementById('btnConfirmarCRM');
     if (botonConfirmar) {
         botonConfirmar.addEventListener('click', async () => {
@@ -131,12 +149,8 @@ document.addEventListener('DOMContentLoaded', () => {
             botonConfirmar.innerText = "Procesando...";
             botonConfirmar.disabled = true;
 
-            let productosTexto = "";
-            let totalGeneral = 0;
-            carrito.forEach(item => {
-                productosTexto += `${item.nombre} (x${item.cantidad}), `;
-                totalGeneral += item.precio * item.cantidad;
-            });
+            let productosTexto = carrito.map(item => `${item.nombre} (x${item.cantidad})`).join(', ');
+            let totalGeneral = carrito.reduce((t, i) => t + (i.precio * i.cantidad), 0);
 
             try {
                 await fetch(scriptURL, {
@@ -154,10 +168,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const modalDiv = document.querySelector('#modalCRM > div');
                 if (modalDiv) {
                     modalDiv.innerHTML = `
-                        <div style="text-align:center;">
+                        <div style="text-align:center; color:white;">
                             <h2 style="color:#00d1b2;">¡Orden Recibida! ✅</h2>
                             <p>Hola <b>${nombre}</b>, procesaremos tu pedido pronto.</p>
-                            <button onclick="location.reload()" style="width:100%; padding:10px; background:#444; color:white; border:none; border-radius:6px; cursor:pointer; margin-top:15px;">Regresar</button>
+                            <button onclick="location.href='index.html'" style="width:100%; padding:10px; background:#444; color:white; border:none; border-radius:6px; cursor:pointer; margin-top:15px;">Regresar al Inicio</button>
                         </div>
                     `;
                 }
@@ -166,33 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert("Error de conexión. Intenta de nuevo.");
                 botonConfirmar.disabled = false;
                 botonConfirmar.innerText = "CONFIRMAR COMPRA";
-            }
-        });
-    }
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    const btnLogin = document.getElementById('btnLogin');
-    
-    if (btnLogin) {
-        btnLogin.addEventListener('click', async () => {
-            const email = document.getElementById('loginEmail').value;
-            const pass = document.getElementById('loginPass').value;
-
-            if (email === "" || pass === "") {
-                alert("Por favor, llena todos los campos");
-                return;
-            }
-
-            try {
-                // Intentar iniciar sesión
-                await firebase.auth().signInWithEmailAndPassword(email, pass);
-                alert("¡Bienvenido de nuevo!");
-                window.location.href = "index.html"; // Lo mandamos al catálogo
-            } catch (error) {
-                // Si el usuario no existe, intentamos registrarlo automáticamente (opcional)
-                // O simplemente mostramos el error:
-                alert("Error: " + error.message);
             }
         });
     }
