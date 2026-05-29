@@ -5,7 +5,7 @@ const firebaseConfig = {
     storageBucket: "hardware-express-ve.firebasestorage.app",
     messagingSenderId: "551081609311",
     appId: "1:551081609311:web:5e17e7b2ed5af122e033ea",
-    measurementId: "G-465FG63MF4"
+    measurementId: "G-Z81Z0YC2CC"
 };
 
 // 1. Inicializar Firebase (Solo si no se ha inicializado antes)
