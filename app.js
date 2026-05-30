@@ -138,52 +138,59 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- LÓGICA DE CRM / PEDIDOS ---
     const botonConfirmar = document.getElementById('btnConfirmarCRM');
-    if (botonConfirmar) {
-        botonConfirmar.addEventListener('click', async () => {
-            const nombre = document.getElementById('nombreCliente').value;
-            const whatsapp = document.getElementById('telCliente').value;
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbzI2_1quYoA9UT0ISASTw3nhQEg2uvkxXDRIX4jHIH17ayl2nyP1i8o6edbuzROY2EZ/exec'; 
+if (botonConfirmar) {
+    botonConfirmar.addEventListener('click', async () => {
+        const nombre = document.getElementById('nombreCliente').value;
+        const whatsapp = document.getElementById('telCliente').value;
+        const fileInput = document.getElementById('archivoPago'); // Captura el nuevo input
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzI2_1quYoA9UT0ISASTw3nhQEg2uvkxXDRIX4jHIH17ayl2nyP1i8o6edbuzROY2EZ/exec'; 
 
-            if (!nombre || !whatsapp) return alert("Por favor, ingresa tu nombre y teléfono.");
+        if (!nombre || !whatsapp || !fileInput.files[0]) {
+            return alert("Por favor, llena tus datos y adjunta la captura del pago.");
+        }
 
-            botonConfirmar.innerText = "Procesando...";
-            botonConfirmar.disabled = true;
+        botonConfirmar.innerText = "Procesando...";
+        botonConfirmar.disabled = true;
 
-            let productosTexto = carrito.map(item => `${item.nombre} (x${item.cantidad})`).join(', ');
-            let totalGeneral = carrito.reduce((t, i) => t + (i.precio * i.cantidad), 0);
+        // Leer la imagen y convertirla a texto para el Excel
+        const reader = new FileReader();
+        reader.readAsDataURL(fileInput.files[0]);
+        reader.onload = async () => {
+            const fotoBase64 = reader.result.split(',')[1];
+            const productosTexto = carrito.map(item => `${item.nombre} (x${item.cantidad || 1})`).join(', ');
+            const totalGeneral = carrito.reduce((t, item) => t + (item.precio * (item.cantidad || 1)), 0);
 
             try {
                 await fetch(scriptURL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         nombre: nombre,
                         whatsapp: whatsapp,
                         productos: productosTexto,
-                        total: totalGeneral
+                        total: totalGeneral,
+                        foto: fotoBase64 // Se envía a la columna "foto" de tu Excel
                     })
                 });
 
+                // Mensaje de éxito
                 const modalDiv = document.querySelector('#modalCRM > div');
-                if (modalDiv) {
-                    modalDiv.innerHTML = `
-                        <div style="text-align:center; color:white;">
-                            <h2 style="color:#00d1b2;">¡Orden Recibida! ✅</h2>
-                            <p>Hola <b>${nombre}</b>, procesaremos tu pedido pronto.</p>
-                            <button onclick="location.href='index.html'" style="width:100%; padding:10px; background:#444; color:white; border:none; border-radius:6px; cursor:pointer; margin-top:15px;">Regresar al Inicio</button>
-                        </div>
-                    `;
-                }
+                modalDiv.innerHTML = `
+                    <div style="text-align:center; color:white; padding:20px;">
+                        <h2 style="color:#00d1b2;">¡Orden Enviada! ✅</h2>
+                        <p>Verificaremos tu pago móvil pronto.</p>
+                        <button onclick="location.href='index.html'" style="width:100%; padding:10px; background:#444; color:white; border:none; border-radius:6px; cursor:pointer; margin-top:15px;">Regresar al Inicio</button>
+                    </div>
+                `;
                 localStorage.removeItem('carrito');
             } catch (error) {
                 alert("Error de conexión. Intenta de nuevo.");
                 botonConfirmar.disabled = false;
                 botonConfirmar.innerText = "CONFIRMAR COMPRA";
             }
-        });
-    }
-});
+        };
+    });
+}
 // Detectar si el usuario está logueado
 auth.onAuthStateChanged((user) => {
     const btnLogin = document.getElementById('btn-login-view');
