@@ -1,17 +1,3 @@
-const firebaseConfig = {
-    apiKey: "AIzaSyBE0Sg4lTMfczh1nWnhp7YD1JePH6usOHA",
-    authDomain: "hardware-express-ve.firebaseapp.com",
-    projectId: "hardware-express-ve",
-    storageBucket: "hardware-express-ve.firebasestorage.app",
-    messagingSenderId: "551081609311",
-    appId: "1:551081609311:web:5e17e7b2ed5af122e033ea",
-    measurementId: "G-Z81Z0YC2CC"
-};
-
-// 1. Inicializar Firebase (Solo si no se ha inicializado antes)
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
 const auth = firebase.auth();
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
