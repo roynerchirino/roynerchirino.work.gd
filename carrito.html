@@ -18,18 +18,26 @@
     </header>
 
     <main>
-        <h2>Resumen de tu Pedido</h2>
-        
-        <!-- Aquí se listarán los productos agregados -->
-       <div id="seccion-pago" style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333; margin-top: 20px; color: white;">
+      <h2>Resumen de tu Pedido</h2>
+
+<div id="resumen-productos" style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #eee;">
+    <div id="lista-carrito">
+        </div>
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+    <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem; color: #1a1a1a;">
+        <span>Total a Pagar:</span>
+        <span id="precio-total">$0</span>
+    </div>
+</div>
+
+<div id="seccion-pago" style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333; color: white;">
     <h3 style="color: #00d1b2; margin-top: 0;">Confirmar Pago Móvil</h3>
     <p style="font-size: 13px; color: #ccc;">Sube la foto del comprobante para procesar tu orden:</p>
-    
-    <input type="file" id="archivo-pago" accept="image/*" style="width: 100%; margin: 15px 0; color: #888;">
-    
-    <button id="btn-finalizar-todo" style="width:100%; padding:14px; background:#00d1b2; color:black; border:none; font-weight:bold; border-radius:8px; cursor:pointer;">
+    <input type="file" id="archivoPago" accept="image/*" style="width: 100%; margin: 15px 0; color: #888;">
+    <button id="btnConfirmarCRM" style="width:100%; padding:14px; background:#00d1b2; color:black; border:none; font-weight:bold; border-radius:8px; cursor:pointer;">
         FINALIZAR COMPRA ✅
     </button>
+</div>
     <p id="mensaje-estado" style="display:none; text-align:center; margin-top:10px; color:#00d1b2; font-size:12px;">Procesando envío... ⏳</p>
 </div>
     </main>
