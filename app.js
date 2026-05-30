@@ -1,3 +1,17 @@
+// LÍNEA 1: Pegar esto arriba de todo
+const firebaseConfig = {
+  apiKey: "AIzaSyBE0Sg4lTMfczh1nWnhp7YD1JePH6usOHA",
+  authDomain: "hardware-express-ve.firebaseapp.com",
+  projectId: "hardware-express-ve",
+  storageBucket: "hardware-express-ve.firebasestorage.app",
+  messagingSenderId: "551081609311",
+  appId: "1:551081609311:web:6eed5549a701db6fe033ea",
+  measurementId: "G-Z81Z0YC2CC"
+};
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 const auth = firebase.auth();
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
