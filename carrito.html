@@ -21,14 +21,17 @@
         <h2>Resumen de tu Pedido</h2>
         
         <!-- Aquí se listarán los productos agregados -->
-        <div id="lista-carrito" class="lista-carrito-contenedor"></div>
-
-        <!-- Sección del Total y Checkout -->
-        <div class="resumen-checkout">
-            <h3>Total a Pagar: <span id="precio-total">$0</span></h3>
-            <p class="nota-pago">* El pago se acordará por WhatsApp (Pago Móvil, Zelle o Binance Pay).</p>
-            <button class="btn-checkout" onclick="enviarPedidoWhatsApp()">Confirmar Pedido por WhatsApp 📲</button>
-        </div>
+       <div id="seccion-pago" style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333; margin-top: 20px; color: white;">
+    <h3 style="color: #00d1b2; margin-top: 0;">Confirmar Pago Móvil</h3>
+    <p style="font-size: 13px; color: #ccc;">Sube la foto del comprobante para procesar tu orden:</p>
+    
+    <input type="file" id="archivo-pago" accept="image/*" style="width: 100%; margin: 15px 0; color: #888;">
+    
+    <button id="btn-finalizar-todo" style="width:100%; padding:14px; background:#00d1b2; color:black; border:none; font-weight:bold; border-radius:8px; cursor:pointer;">
+        FINALIZAR COMPRA ✅
+    </button>
+    <p id="mensaje-estado" style="display:none; text-align:center; margin-top:10px; color:#00d1b2; font-size:12px;">Procesando envío... ⏳</p>
+</div>
     </main>
 
     <footer>
