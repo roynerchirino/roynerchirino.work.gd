@@ -8,6 +8,7 @@ const firebaseConfig = {
   measurementId: "G-Z81Z0YC2CC"
 };
 
+// Evita el error de "Already declared" al recargar
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
@@ -68,7 +69,7 @@ function renderizarListaCarrito() {
     if (contenedorTotal) contenedorTotal.innerText = `$${totalGeneral}`;
 }
 
-// 3. LÓGICA DE AGREGAR/ELIMINAR
+// 3. LÓGICA DE CARRITO
 function agregarAlCarrito(id) {
     if (typeof productos === 'undefined') return;
     const producto = productos.find(p => p.id === id);
@@ -77,12 +78,11 @@ function agregarAlCarrito(id) {
     if (itemEnCarrito) {
         itemEnCarrito.cantidad++;
     } else {
-        // Corregido "quantity" a "cantidad" para consistencia
         carrito.push({ ...producto, cantidad: 1 }); 
     }
     localStorage.setItem('carrito', JSON.stringify(carrito));
     actualizarContadorCarrito();
-    alert(`${producto.nombre} agregado con éxito ✅`);
+    alert(`${producto.nombre} agregado ✅`);
 }
 
 function eliminarDelCarrito(id) {
@@ -106,6 +106,38 @@ document.addEventListener('DOMContentLoaded', () => {
     renderizarListaCarrito();
     actualizarContadorCarrito();
 
+    // LÓGICA DE LOGIN (Para tu Screenshot_880)
+    const btnEntrar = document.getElementById('btn-entrar');
+    if (btnEntrar) {
+        btnEntrar.addEventListener('click', async () => {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            try {
+                await auth.signInWithEmailAndPassword(email, pass);
+                alert("¡Bienvenido! ✅");
+                window.location.href = "index.html";
+            } catch (e) { alert("Error: " + e.message); }
+        });
+    }
+
+    // LÓGICA DE REGISTRO (Para tu Screenshot_880)
+    const linkReg = document.getElementById('link-registro');
+    if (linkReg) {
+        linkReg.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const email = prompt("Introduce un correo para registrarte:");
+            const pass = prompt("Crea una contraseña (mínimo 6 caracteres):");
+            if (email && pass) {
+                try {
+                    await auth.createUserWithEmailAndPassword(email, pass);
+                    alert("¡Cuenta creada exitosamente! 🎉");
+                    window.location.reload();
+                } catch (err) { alert("Error: " + err.message); }
+            }
+        });
+    }
+
+    // CONFIRMAR COMPRA CRM
     const botonConfirmar = document.getElementById('btnConfirmarCRM');
     if (botonConfirmar) {
         botonConfirmar.addEventListener('click', async () => {
@@ -115,10 +147,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const scriptURL = 'https://script.google.com/macros/s/AKfycbzI2_1quYoA9UT0ISASTw3nhQEg2uvkxXDRIX4jHIH17ayl2nyP1i8o6edbuzROY2EZ/exec'; 
 
             if (!nombre || !whatsapp || (fileInput && !fileInput.files[0])) {
-                return alert("Por favor, llena tus datos y adjunta la captura del pago.");
+                return alert("Por favor, llena tus datos y sube el pago móvil.");
             }
 
-            botonConfirmar.innerText = "Procesando... ⏳";
+            botonConfirmar.innerText = "Enviando... ⏳";
             botonConfirmar.disabled = true;
 
             const reader = new FileReader();
@@ -140,26 +172,19 @@ document.addEventListener('DOMContentLoaded', () => {
                             foto: fotoBase64
                         })
                     });
-
-                    document.querySelector('#modalCRM > div').innerHTML = `
-                        <div style="text-align:center; color:white; padding:20px;">
-                            <h2 style="color:#00d1b2;">¡Orden Recibida! ✅</h2>
-                            <p>Procesaremos tu pedido pronto.</p>
-                            <button onclick="location.href='index.html'" style="width:100%; padding:10px; background:#444; color:white; border:none; border-radius:6px; cursor:pointer; margin-top:15px;">Regresar al Inicio</button>
-                        </div>
-                    `;
+                    alert("¡Pedido enviado! ✅");
                     localStorage.removeItem('carrito');
+                    window.location.href = "index.html";
                 } catch (error) {
-                    alert("Error al enviar. Intenta de nuevo.");
+                    alert("Error al enviar.");
                     botonConfirmar.disabled = false;
-                    botonConfirmar.innerText = "CONFIRMAR COMPRA";
                 }
             };
         });
     }
 });
 
-// 5. PERFIL Y SESIÓN
+// 5. SESIÓN
 auth.onAuthStateChanged((user) => {
     const btnLogin = document.getElementById('btn-login-view');
     const perfilUser = document.getElementById('perfil-usuario');
