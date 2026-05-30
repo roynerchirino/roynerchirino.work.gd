@@ -184,3 +184,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+// Detectar si el usuario está logueado
+auth.onAuthStateChanged((user) => {
+    const btnLogin = document.getElementById('btn-login-view');
+    const perfilUser = document.getElementById('perfil-usuario');
+    const userEmailSpan = document.getElementById('user-email');
+
+    if (user) {
+        // Usuario inició sesión
+        if(btnLogin) btnLogin.style.display = 'none';
+        if(perfilUser) perfilUser.style.display = 'flex';
+        if(userEmailSpan) userEmailSpan.innerText = user.email;
+    } else {
+        // No hay usuario
+        if(btnLogin) btnLogin.style.display = 'block';
+        if(perfilUser) perfilUser.style.display = 'none';
+    }
+});
+
+// Función para Cerrar Sesión
+document.getElementById('btn-logout')?.addEventListener('click', () => {
+    auth.signOut().then(() => {
+        window.location.reload(); // Recarga para limpiar la vista
+    });
+});
