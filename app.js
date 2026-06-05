@@ -136,7 +136,23 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
+const btnGoogle = document.getElementById('btn-google'); // Asegúrate de que tu botón en el HTML tenga este ID
+if (btnGoogle) {
+    btnGoogle.addEventListener('click', async () => {
+        // Creamos la instancia del proveedor de Google
+        const provider = new firebase.auth.GoogleAuthProvider();
+        
+        try {
+            // Abre la ventanita flotante para elegir la cuenta de Google
+            await auth.signInWithPopup(provider);
+            alert("¡Sesión iniciada con Google con éxito! 🚀");
+            window.location.href = "index.html"; // Redirige al inicio
+        } catch (error) {
+            console.error("Error con Google Auth:", error);
+            alert("No se pudo iniciar sesión con Google: " + error.message);
+        }
+    });
+}
     // CONFIRMAR COMPRA CRM
     const botonConfirmar = document.getElementById('btnConfirmarCRM');
     if (botonConfirmar) {
