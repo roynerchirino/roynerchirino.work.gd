@@ -1,3 +1,4 @@
+// 1. CONFIGURACIÓN ÚNICA DE FIREBASE (Hardware Express)
 const firebaseConfig = {
   apiKey: "AIzaSyBE0Sg4lTMfczh1nWnhp7YD1JePH6usOHA",
   authDomain: "hardware-express-ve.firebaseapp.com",
@@ -8,7 +9,7 @@ const firebaseConfig = {
   measurementId: "G-Z81Z0YC2CC"
 };
 
-// Evita el error de "Already declared" al recargar
+// Evita errores de "Already declared" al recargar la página
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
@@ -69,7 +70,7 @@ function renderizarListaCarrito() {
     if (contenedorTotal) contenedorTotal.innerText = `$${totalGeneral}`;
 }
 
-// 3. LÓGICA DE CARRITO
+// 3. LÓGICA DE MIEMBROS Y CARRITO
 function agregarAlCarrito(id) {
     if (typeof productos === 'undefined') return;
     const producto = productos.find(p => p.id === id);
@@ -100,13 +101,13 @@ function actualizarContadorCarrito() {
     }
 }
 
-// 4. EVENTOS (DOMContentLoaded)
+// 4. EVENTOS PRINCIPALES (Al cargar el documento)
 document.addEventListener('DOMContentLoaded', () => {
     renderizarProductos();
     renderizarListaCarrito();
     actualizarContadorCarrito();
 
-    // LÓGICA DE LOGIN (Para tu Screenshot_880)
+    // BOTÓN ENTRAR (LOGIN POR CORREO)
     const btnEntrar = document.getElementById('btn-entrar');
     if (btnEntrar) {
         btnEntrar.addEventListener('click', async () => {
@@ -114,13 +115,29 @@ document.addEventListener('DOMContentLoaded', () => {
             const pass = document.getElementById('login-pass').value;
             try {
                 await auth.signInWithEmailAndPassword(email, pass);
-                alert("¡Bienvenido! ✅");
+                alert("¡Bienvenido de nuevo! ✅");
                 window.location.href = "index.html";
-            } catch (e) { alert("Error: " + e.message); }
+            } catch (e) { alert("Error al iniciar sesión: " + e.message); }
         });
     }
 
-    // LÓGICA DE REGISTRO (Para tu Screenshot_880)
+    // BOTÓN LOGUEARSE CON GOOGLE
+    const btnGoogle = document.getElementById('btn-google'); 
+    if (btnGoogle) {
+        btnGoogle.addEventListener('click', async () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                await auth.signInWithPopup(provider);
+                alert("¡Sesión iniciada con Google con éxito! 🚀");
+                window.location.href = "index.html"; 
+            } catch (error) {
+                console.error("Error con Google Auth:", error);
+                alert("No se pudo iniciar sesión con Google: " + error.message);
+            }
+        });
+    }
+
+    // ENLACE REGISTRARSE (CREAR CUENTA NUEVA)
     const linkReg = document.getElementById('link-registro');
     if (linkReg) {
         linkReg.addEventListener('click', async (e) => {
@@ -130,30 +147,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (email && pass) {
                 try {
                     await auth.createUserWithEmailAndPassword(email, pass);
-                    alert("¡Cuenta creada exitosamente! 🎉");
+                    alert("¡Cuenta creada exitosamente! 🎉 Ya iniciaste sesión automáticamente.");
                     window.location.reload();
-                } catch (err) { alert("Error: " + err.message); }
+                } catch (err) { alert("Error al registrarse: " + err.message); }
             }
         });
     }
-const btnGoogle = document.getElementById('btn-google'); // Asegúrate de que tu botón en el HTML tenga este ID
-if (btnGoogle) {
-    btnGoogle.addEventListener('click', async () => {
-        // Creamos la instancia del proveedor de Google
-        const provider = new firebase.auth.GoogleAuthProvider();
-        
-        try {
-            // Abre la ventanita flotante para elegir la cuenta de Google
-            await auth.signInWithPopup(provider);
-            alert("¡Sesión iniciada con Google con éxito! 🚀");
-            window.location.href = "index.html"; // Redirige al inicio
-        } catch (error) {
-            console.error("Error con Google Auth:", error);
-            alert("No se pudo iniciar sesión con Google: " + error.message);
-        }
-    });
-}
-    // CONFIRMAR COMPRA CRM
+
+    // CONFIRMAR COMPRA E INTEGRACIÓN CON CRM
     const botonConfirmar = document.getElementById('btnConfirmarCRM');
     if (botonConfirmar) {
         botonConfirmar.addEventListener('click', async () => {
@@ -188,19 +189,31 @@ if (btnGoogle) {
                             foto: fotoBase64
                         })
                     });
-                    alert("¡Pedido enviado! ✅");
+                    
+                    const modalCuerpo = document.getElementById('modal-checkout-body');
+                    if(modalCuerpo) {
+                        modalCuerpo.innerHTML = `
+                            <div style="text-align:center; padding:20px;">
+                                <h2 style="color:#00d1b2;">¡Orden Recibida! ✅</h2>
+                                <p>Procesaremos tu pedido pronto.</p>
+                                <button onclick="location.href='index.html'" style="width:100%; padding:10px; background:#444; color:white; border:none; border-radius:6px; cursor:pointer; margin-top:15px;">Regresar al Inicio</button>
+                            </div>
+                        `;
+                    } else {
+                        alert("¡Pedido enviado! ✅");
+                    }
                     localStorage.removeItem('carrito');
-                    window.location.href = "index.html";
                 } catch (error) {
-                    alert("Error al enviar.");
+                    alert("Error al enviar. Intenta de nuevo.");
                     botonConfirmar.disabled = false;
+                    botonConfirmar.innerText = "CONFIRMAR COMPRA";
                 }
             };
         });
     }
 });
 
-// 5. SESIÓN
+// 5. PERFIL Y CONTROL DE ESTADO DE LA SESIÓN
 auth.onAuthStateChanged((user) => {
     const btnLogin = document.getElementById('btn-login-view');
     const perfilUser = document.getElementById('perfil-usuario');
