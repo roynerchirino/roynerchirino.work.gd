@@ -1,26 +1,24 @@
-if (typeof firebaseConfig === 'undefined') {
-    var firebaseConfig = {
-      apiKey: "AIzaSyBE0Sg4lTMfczh1nWnhp7YD1JePH6usOHA",
-      authDomain: "hardware-express-ve.firebaseapp.com",
-      projectId: "hardware-express-ve",
-      storageBucket: "hardware-express-ve.firebasestorage.app",
-      messagingSenderId: "551081609311",
-      appId: "1:551081609311:web:6eed5549a701db6fe033ea",
-      measurementId: "G-Z81Z0YC2CC"
-    };
-}
+// 1. CONFIGURACIÓN FORZADA Y CONTROLADA DE FIREBASE
+var firebaseConfig = {
+  apiKey: "AIzaSyBE0Sg4lTMfczh1nWnhp7YD1JePH6usOHA",
+  authDomain: "hardware-express-ve.firebaseapp.com",
+  projectId: "hardware-express-ve",
+  storageBucket: "hardware-express-ve.firebasestorage.app",
+  messagingSenderId: "551081609311",
+  appId: "1:551081609311:web:6eed5549a701db6fe033ea",
+  measurementId: "G-Z81Z0YC2CC"
+};
 
-// Inicializa de forma segura sin duplicar
-if (!firebase.apps.length) {
+// Reinicializa de forma limpia para asegurar que tome la API Key correcta
+if (firebase.apps.length > 0) {
+    firebase.app().delete().then(function() {
+        firebase.initializeApp(firebaseConfig);
+    });
+} else {
     firebase.initializeApp(firebaseConfig);
 }
 
-if (typeof auth === 'undefined') {
-    var auth = firebase.auth();
-} else {
-    auth = firebase.auth();
-}
-
+var auth = firebase.auth();
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
 // 2. FUNCIONES DE RENDERIZADO
@@ -77,7 +75,7 @@ function renderizarListaCarrito() {
     if (contenedorTotal) contenedorTotal.innerText = `$${totalGeneral}`;
 }
 
-// 3. LÓGICA DE MIEMBROS Y CARRITO
+// 3. LÓGICA DEL CARRITO
 function agregarAlCarrito(id) {
     if (typeof productos === 'undefined') return;
     const producto = productos.find(p => p.id === id);
@@ -108,13 +106,13 @@ function actualizarContadorCarrito() {
     }
 }
 
-// 4. EVENTOS PRINCIPALES (Al cargar el documento)
+// 4. EVENTOS PRINCIPALES
 document.addEventListener('DOMContentLoaded', () => {
     renderizarProductos();
     renderizarListaCarrito();
     actualizarContadorCarrito();
 
-    // BOTÓN ENTRAR (LOGIN POR CORREO)
+    // LOGIN POR CORREO
     const btnEntrar = document.getElementById('btn-entrar');
     if (btnEntrar) {
         btnEntrar.addEventListener('click', async () => {
@@ -144,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ENLACE REGISTRARSE (CREAR CUENTA NUEVA)
+    // ENLACE REGISTRARSE
     const linkReg = document.getElementById('link-registro');
     if (linkReg) {
         linkReg.addEventListener('click', async (e) => {
@@ -154,14 +152,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (email && pass) {
                 try {
                     await auth.createUserWithEmailAndPassword(email, pass);
-                    alert("¡Cuenta creada exitosamente! 🎉 Ya iniciaste sesión automáticamente.");
+                    alert("¡Cuenta creada exitosamente! 🎉");
                     window.location.reload();
                 } catch (err) { alert("Error al registrarse: " + err.message); }
             }
         });
     }
 
-    // CONFIRMAR COMPRA E INTEGRACIÓN CON CRM (GOOGLE SHEETS)
+    // INTEGRACIÓN CON CRM (GOOGLE SHEETS)
     const botonConfirmar = document.getElementById('btnConfirmarCRM');
     if (botonConfirmar) {
         botonConfirmar.addEventListener('click', async () => {
@@ -220,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// 5. PERFIL Y CONTROL DE ESTADO DE LA SESIÓN
+// 5. PERFIL Y CONTROL DE SESIÓN
 auth.onAuthStateChanged((user) => {
     const btnLogin = document.getElementById('btn-login-view');
     const perfilUser = document.getElementById('perfil-usuario');
