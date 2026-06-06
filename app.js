@@ -1,4 +1,3 @@
-/ 1. CONFIGURACIÓN PROTEGIDA DE FIREBASE (Usa lo existente o lo crea si no está)
 if (typeof firebaseConfig === 'undefined') {
     var firebaseConfig = {
       apiKey: "AIzaSyBE0Sg4lTMfczh1nWnhp7YD1JePH6usOHA",
@@ -11,21 +10,20 @@ if (typeof firebaseConfig === 'undefined') {
     };
 }
 
+// Inicializa de forma segura sin duplicar
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 
-// PROTECCIÓN DE LA VARIABLE AUTH (Si ya existe, la usa. Si no, la inicializa)
 if (typeof auth === 'undefined') {
     var auth = firebase.auth();
 } else {
     auth = firebase.auth();
 }
 
-// Inicialización del carrito
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
-// 2. FUNCIONES DE RENDERIZADO (PRODUCTOS Y CARRITO)
+// 2. FUNCIONES DE RENDERIZADO
 function renderizarProductos() {
     const contenedor = document.getElementById('contenedor-productos');
     if (!contenedor) return;
@@ -79,7 +77,7 @@ function renderizarListaCarrito() {
     if (contenedorTotal) contenedorTotal.innerText = `$${totalGeneral}`;
 }
 
-// 3. LÓGICA DEL CARRITO
+// 3. LÓGICA DE MIEMBROS Y CARRITO
 function agregarAlCarrito(id) {
     if (typeof productos === 'undefined') return;
     const producto = productos.find(p => p.id === id);
@@ -92,7 +90,7 @@ function agregarAlCarrito(id) {
     }
     localStorage.setItem('carrito', JSON.stringify(carrito));
     actualizarContadorCarrito();
-    alert(`${producto.nombre} agregado con éxito ✅`);
+    alert(`${producto.nombre} agregado ✅`);
 }
 
 function eliminarDelCarrito(id) {
@@ -110,13 +108,13 @@ function actualizarContadorCarrito() {
     }
 }
 
-// 4. EVENTOS PRINCIPALES
+// 4. EVENTOS PRINCIPALES (Al cargar el documento)
 document.addEventListener('DOMContentLoaded', () => {
     renderizarProductos();
     renderizarListaCarrito();
     actualizarContadorCarrito();
 
-    // BOTÓN ENTRAR CORREO
+    // BOTÓN ENTRAR (LOGIN POR CORREO)
     const btnEntrar = document.getElementById('btn-entrar');
     if (btnEntrar) {
         btnEntrar.addEventListener('click', async () => {
@@ -124,9 +122,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const pass = document.getElementById('login-pass').value;
             try {
                 await auth.signInWithEmailAndPassword(email, pass);
-                alert("¡Bienvenido! ✅");
+                alert("¡Bienvenido de nuevo! ✅");
                 window.location.href = "index.html";
-            } catch (e) { alert("Error al entrar: " + e.message); }
+            } catch (e) { alert("Error al iniciar sesión: " + e.message); }
         });
     }
 
@@ -137,16 +135,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
                 await auth.signInWithPopup(provider);
-                alert("¡Sesión iniciada con Google! 🚀");
+                alert("¡Sesión iniciada con Google con éxito! 🚀");
                 window.location.href = "index.html"; 
             } catch (error) {
                 console.error("Error con Google Auth:", error);
-                alert("Error de Google: " + error.message);
+                alert("No se pudo iniciar sesión con Google: " + error.message);
             }
         });
     }
 
-    // ENLACE REGISTRO
+    // ENLACE REGISTRARSE (CREAR CUENTA NUEVA)
     const linkReg = document.getElementById('link-registro');
     if (linkReg) {
         linkReg.addEventListener('click', async (e) => {
@@ -156,14 +154,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (email && pass) {
                 try {
                     await auth.createUserWithEmailAndPassword(email, pass);
-                    alert("¡Cuenta creada exitosamente! 🎉");
+                    alert("¡Cuenta creada exitosamente! 🎉 Ya iniciaste sesión automáticamente.");
                     window.location.reload();
                 } catch (err) { alert("Error al registrarse: " + err.message); }
             }
         });
     }
 
-    // INTEGRACIÓN CRM / GOOGLE SHEETS
+    // CONFIRMAR COMPRA E INTEGRACIÓN CON CRM (GOOGLE SHEETS)
     const botonConfirmar = document.getElementById('btnConfirmarCRM');
     if (botonConfirmar) {
         botonConfirmar.addEventListener('click', async () => {
@@ -173,10 +171,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const scriptURL = 'https://script.google.com/macros/s/AKfycbzI2_1quYoA9UT0ISASTw3nhQEg2uvkxXDRIX4jHIH17ayl2nyP1i8o6edbuzROY2EZ/exec'; 
 
             if (!nombre || !whatsapp || (fileInput && !fileInput.files[0])) {
-                return alert("Por favor, llena tus datos y adjunta la captura del pago.");
+                return alert("Por favor, llena tus datos y sube el pago móvil.");
             }
 
-            botonConfirmar.innerText = "Procesando... ⏳";
+            botonConfirmar.innerText = "Enviando... ⏳";
             botonConfirmar.disabled = true;
 
             const reader = new FileReader();
@@ -198,14 +196,19 @@ document.addEventListener('DOMContentLoaded', () => {
                             foto: fotoBase64
                         })
                     });
-
-                    document.querySelector('#modalCRM > div').innerHTML = `
-                        <div style="text-align:center; color:white; padding:20px;">
-                            <h2 style="color:#00d1b2;">¡Orden Recibida! ✅</h2>
-                            <p>Procesaremos tu pedido pronto.</p>
-                            <button onclick="location.href='index.html'" style="width:100%; padding:10px; background:#444; color:white; border:none; border-radius:6px; cursor:pointer; margin-top:15px;">Regresar al Inicio</button>
-                        </div>
-                    `;
+                    
+                    const modalCuerpo = document.getElementById('modal-checkout-body');
+                    if(modalCuerpo) {
+                        modalCuerpo.innerHTML = `
+                            <div style="text-align:center; padding:20px;">
+                                <h2 style="color:#00d1b2;">¡Orden Recibida! ✅</h2>
+                                <p>Procesaremos tu pedido pronto.</p>
+                                <button onclick="location.href='index.html'" style="width:100%; padding:10px; background:#444; color:white; border:none; border-radius:6px; cursor:pointer; margin-top:15px;">Regresar al Inicio</button>
+                            </div>
+                        `;
+                    } else {
+                        alert("¡Pedido enviado! ✅");
+                    }
                     localStorage.removeItem('carrito');
                 } catch (error) {
                     alert("Error al enviar. Intenta de nuevo.");
@@ -217,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// 5. ESTADO DE LA SESIÓN
+// 5. PERFIL Y CONTROL DE ESTADO DE LA SESIÓN
 auth.onAuthStateChanged((user) => {
     const btnLogin = document.getElementById('btn-login-view');
     const perfilUser = document.getElementById('perfil-usuario');
