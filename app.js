@@ -1,21 +1,28 @@
-// 1. CONFIGURACIÓN PROTEGIDA DE FIREBASE
+/ 1. CONFIGURACIÓN PROTEGIDA DE FIREBASE (Usa lo existente o lo crea si no está)
 if (typeof firebaseConfig === 'undefined') {
-    const firebaseConfig = {
-    apiKey: "AIzaSyBEOSg4lTMfczh1nWnhp7YD1JePH6usOHA",
-    authDomain: "hardware-express-ve.firebaseapp.com",
-    projectId: "hardware-express-ve",
-    storageBucket: "hardware-express-ve.firebasestorage.app",
-    messagingSenderId: "551081609311",
-    appId: "1:551081609311:web:6eed5549a701db6fe033ea",
-    measurementId: "G-Z81Z0YC2CC"
-  };
+    var firebaseConfig = {
+      apiKey: "AIzaSyBE0Sg4lTMfczh1nWnhp7YD1JePH6usOHA",
+      authDomain: "hardware-express-ve.firebaseapp.com",
+      projectId: "hardware-express-ve",
+      storageBucket: "hardware-express-ve.firebasestorage.app",
+      messagingSenderId: "551081609311",
+      appId: "1:551081609311:web:6eed5549a701db6fe033ea",
+      measurementId: "G-Z81Z0YC2CC"
+    };
 }
 
-// Inicialización segura de Firebase para evitar errores de duplicado
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
-const auth = firebase.auth();
+
+// PROTECCIÓN DE LA VARIABLE AUTH (Si ya existe, la usa. Si no, la inicializa)
+if (typeof auth === 'undefined') {
+    var auth = firebase.auth();
+} else {
+    auth = firebase.auth();
+}
+
+// Inicialización del carrito
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
 // 2. FUNCIONES DE RENDERIZADO (PRODUCTOS Y CARRITO)
@@ -72,7 +79,7 @@ function renderizarListaCarrito() {
     if (contenedorTotal) contenedorTotal.innerText = `$${totalGeneral}`;
 }
 
-// 3. LÓGICA DE AGREGAR/ELIMINAR DEL CARRITO
+// 3. LÓGICA DEL CARRITO
 function agregarAlCarrito(id) {
     if (typeof productos === 'undefined') return;
     const producto = productos.find(p => p.id === id);
@@ -103,13 +110,13 @@ function actualizarContadorCarrito() {
     }
 }
 
-// 4. EVENTOS PRINCIPALES (Al cargar la página)
+// 4. EVENTOS PRINCIPALES
 document.addEventListener('DOMContentLoaded', () => {
     renderizarProductos();
     renderizarListaCarrito();
     actualizarContadorCarrito();
 
-    // BOTÓN ENTRAR (LOGIN TRADICIONAL POR CORREO)
+    // BOTÓN ENTRAR CORREO
     const btnEntrar = document.getElementById('btn-entrar');
     if (btnEntrar) {
         btnEntrar.addEventListener('click', async () => {
@@ -123,13 +130,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // BOTÓN DE INICIO DE SESIÓN CON GOOGLE
+    // BOTÓN LOGUEARSE CON GOOGLE
     const btnGoogle = document.getElementById('btn-google'); 
     if (btnGoogle) {
         btnGoogle.addEventListener('click', async () => {
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
-                // Abre la ventana emergente de autenticación de Google
                 await auth.signInWithPopup(provider);
                 alert("¡Sesión iniciada con Google! 🚀");
                 window.location.href = "index.html"; 
@@ -140,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ENLACE REGÍSTRATE AQUÍ
+    // ENLACE REGISTRO
     const linkReg = document.getElementById('link-registro');
     if (linkReg) {
         linkReg.addEventListener('click', async (e) => {
@@ -157,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // CONFIRMAR COMPRA E INTEGRACIÓN CON SCRIPT DE GOOGLE (CRM)
+    // INTEGRACIÓN CRM / GOOGLE SHEETS
     const botonConfirmar = document.getElementById('btnConfirmarCRM');
     if (botonConfirmar) {
         botonConfirmar.addEventListener('click', async () => {
@@ -211,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// 5. CAMBIO DE ESTADO DE SESIÓN (MOSTRAR PERFIL O LOGIN)
+// 5. ESTADO DE LA SESIÓN
 auth.onAuthStateChanged((user) => {
     const btnLogin = document.getElementById('btn-login-view');
     const perfilUser = document.getElementById('perfil-usuario');
