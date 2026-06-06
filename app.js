@@ -1,14 +1,14 @@
 // 1. CONFIGURACIÓN PROTEGIDA DE FIREBASE
 if (typeof firebaseConfig === 'undefined') {
-    var firebaseConfig = {
-      apiKey: "AIzaSyBE0Sg4lTMfczh1nWnhp7YD1JePH6usOHA",
-      authDomain: "hardware-express-ve.firebaseapp.com",
-      projectId: "hardware-express-ve",
-      storageBucket: "hardware-express-ve.firebasestorage.app",
-      messagingSenderId: "551081609311",
-      appId: "1:551081609311:web:6eed5549a701db6fe033ea",
-      measurementId: "G-Z81Z0YC2CC"
-    };
+    vconst firebaseConfig = {
+    apiKey: "AIzaSyBEOSg4lTMfczh1nWnhp7YD1JePH6usOHA",
+    authDomain: "hardware-express-ve.firebaseapp.com",
+    projectId: "hardware-express-ve",
+    storageBucket: "hardware-express-ve.firebasestorage.app",
+    messagingSenderId: "551081609311",
+    appId: "1:551081609311:web:6eed5549a701db6fe033ea",
+    measurementId: "G-Z81Z0YC2CC"
+  };
 }
 
 // Inicialización segura de Firebase para evitar errores de duplicado
