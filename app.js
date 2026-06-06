@@ -11,14 +11,14 @@ if (typeof firebaseConfig === 'undefined') {
     };
 }
 
-// Inicialización segura sin duplicados
+// Inicialización segura de Firebase para evitar errores de duplicado
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 const auth = firebase.auth();
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
-// 2. FUNCIONES DE RENDERIZADO
+// 2. FUNCIONES DE RENDERIZADO (PRODUCTOS Y CARRITO)
 function renderizarProductos() {
     const contenedor = document.getElementById('contenedor-productos');
     if (!contenedor) return;
@@ -72,7 +72,7 @@ function renderizarListaCarrito() {
     if (contenedorTotal) contenedorTotal.innerText = `$${totalGeneral}`;
 }
 
-// 3. LÓGICA DE AGREGAR/ELIMINAR
+// 3. LÓGICA DE AGREGAR/ELIMINAR DEL CARRITO
 function agregarAlCarrito(id) {
     if (typeof productos === 'undefined') return;
     const producto = productos.find(p => p.id === id);
@@ -103,13 +103,13 @@ function actualizarContadorCarrito() {
     }
 }
 
-// 4. EVENTOS (DOMContentLoaded)
+// 4. EVENTOS PRINCIPALES (Al cargar la página)
 document.addEventListener('DOMContentLoaded', () => {
     renderizarProductos();
     renderizarListaCarrito();
     actualizarContadorCarrito();
 
-    // LOGIN POR CORREO
+    // BOTÓN ENTRAR (LOGIN TRADICIONAL POR CORREO)
     const btnEntrar = document.getElementById('btn-entrar');
     if (btnEntrar) {
         btnEntrar.addEventListener('click', async () => {
@@ -123,12 +123,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // INTERCEPCIÓN DEL BOTÓN DE GOOGLE
+    // BOTÓN DE INICIO DE SESIÓN CON GOOGLE
     const btnGoogle = document.getElementById('btn-google'); 
     if (btnGoogle) {
         btnGoogle.addEventListener('click', async () => {
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
+                // Abre la ventana emergente de autenticación de Google
                 await auth.signInWithPopup(provider);
                 alert("¡Sesión iniciada con Google! 🚀");
                 window.location.href = "index.html"; 
@@ -139,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // LINK REGISTRO
+    // ENLACE REGÍSTRATE AQUÍ
     const linkReg = document.getElementById('link-registro');
     if (linkReg) {
         linkReg.addEventListener('click', async (e) => {
@@ -156,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // CONFIRMAR COMPRA CRM
+    // CONFIRMAR COMPRA E INTEGRACIÓN CON SCRIPT DE GOOGLE (CRM)
     const botonConfirmar = document.getElementById('btnConfirmarCRM');
     if (botonConfirmar) {
         botonConfirmar.addEventListener('click', async () => {
@@ -210,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// 5. PERFIL Y SESIÓN
+// 5. CAMBIO DE ESTADO DE SESIÓN (MOSTRAR PERFIL O LOGIN)
 auth.onAuthStateChanged((user) => {
     const btnLogin = document.getElementById('btn-login-view');
     const perfilUser = document.getElementById('perfil-usuario');
