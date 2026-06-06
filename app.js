@@ -1,6 +1,6 @@
 // 1. CONFIGURACIÓN PROTEGIDA DE FIREBASE
 if (typeof firebaseConfig === 'undefined') {
-    vconst firebaseConfig = {
+    const firebaseConfig = {
     apiKey: "AIzaSyBEOSg4lTMfczh1nWnhp7YD1JePH6usOHA",
     authDomain: "hardware-express-ve.firebaseapp.com",
     projectId: "hardware-express-ve",
