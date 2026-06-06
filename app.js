@@ -1,15 +1,17 @@
-// 1. CONFIGURACIÓN ÚNICA DE FIREBASE (Hardware Express)
-const firebaseConfig = {
-  apiKey: "AIzaSyBE0Sg4lTMfczh1nWnhp7YD1JePH6usOHA",
-  authDomain: "hardware-express-ve.firebaseapp.com",
-  projectId: "hardware-express-ve",
-  storageBucket: "hardware-express-ve.firebasestorage.app",
-  messagingSenderId: "551081609311",
-  appId: "1:551081609311:web:6eed5549a701db6fe033ea",
-  measurementId: "G-Z81Z0YC2CC"
-};
+// 1. CONFIGURACIÓN PROTEGIDA DE FIREBASE
+if (typeof firebaseConfig === 'undefined') {
+    var firebaseConfig = {
+      apiKey: "AIzaSyBE0Sg4lTMfczh1nWnhp7YD1JePH6usOHA",
+      authDomain: "hardware-express-ve.firebaseapp.com",
+      projectId: "hardware-express-ve",
+      storageBucket: "hardware-express-ve.firebasestorage.app",
+      messagingSenderId: "551081609311",
+      appId: "1:551081609311:web:6eed5549a701db6fe033ea",
+      measurementId: "G-Z81Z0YC2CC"
+    };
+}
 
-// Evita errores de "Already declared" al recargar la página
+// Inicialización segura sin duplicados
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
@@ -70,7 +72,7 @@ function renderizarListaCarrito() {
     if (contenedorTotal) contenedorTotal.innerText = `$${totalGeneral}`;
 }
 
-// 3. LÓGICA DE AGREGAR/ELIMINAR DEL CARRITO
+// 3. LÓGICA DE AGREGAR/ELIMINAR
 function agregarAlCarrito(id) {
     if (typeof productos === 'undefined') return;
     const producto = productos.find(p => p.id === id);
@@ -101,13 +103,13 @@ function actualizarContadorCarrito() {
     }
 }
 
-// 4. EVENTOS PRINCIPALES (DOMContentLoaded)
+// 4. EVENTOS (DOMContentLoaded)
 document.addEventListener('DOMContentLoaded', () => {
     renderizarProductos();
     renderizarListaCarrito();
     actualizarContadorCarrito();
 
-    // BOTÓN ENTRAR (LOGIN POR CORREO)
+    // LOGIN POR CORREO
     const btnEntrar = document.getElementById('btn-entrar');
     if (btnEntrar) {
         btnEntrar.addEventListener('click', async () => {
@@ -121,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // BOTÓN INICIAR SESIÓN CON GOOGLE 
+    // INTERCEPCIÓN DEL BOTÓN DE GOOGLE
     const btnGoogle = document.getElementById('btn-google'); 
     if (btnGoogle) {
         btnGoogle.addEventListener('click', async () => {
@@ -137,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ENLACE REGÍSTRATE AQUÍ
+    // LINK REGISTRO
     const linkReg = document.getElementById('link-registro');
     if (linkReg) {
         linkReg.addEventListener('click', async (e) => {
