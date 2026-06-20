@@ -1,3 +1,4 @@
+let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 // =========================================================================
 // 1. CONFIGURACIÓN ÚNICA Y CENTRALIZADA DE FIREBASE (Asegura tu clave aquí)
 // =========================================================================
@@ -17,7 +18,7 @@ if (!firebase.apps.length) {
 }
 
 var auth = firebase.auth();
-let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+
 
 // =========================================================================
 // 2. FUNCIONES DE RENDERIZADO (PRODUCTOS Y CARRITO)
