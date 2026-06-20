@@ -4,7 +4,7 @@ let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 // 1. CONFIGURACIÓN ÚNICA Y CENTRALIZADA DE FIREBASE
 // =========================================================================
 var firebaseConfig = {
-  apiKey: "AIzaSyBEOSg4lTMfczh1nWnhp7YD1JePH6usOHA", // Tu clave activa corregida
+  apiKey: "AIzaSyBEOSg4lTMfczh1nWnhp7YD1JePH6usOHA", 
   authDomain: "hardware-express-ve.firebaseapp.com",
   projectId: "hardware-express-ve",
   storageBucket: "hardware-express-ve.firebasestorage.app",
@@ -13,7 +13,6 @@ var firebaseConfig = {
   measurementId: "G-Z81Z0YC2CC"
 };
 
-// Inicialización limpia de Firebase
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
@@ -68,7 +67,7 @@ function renderizarListaCarrito() {
             </div>
             <div style="display: flex; align-items: center; gap: 1rem;">
                 <span style="font-weight: bold;">$${subtotal}</span>
-                <button class="btn-eliminar" onclick="eliminarDelCarrito(${item.id})">❌</button>
+                <button class="btn-eliminar" onclick="disabledDelCarrito(${item.id})">❌</button>
             </div>
         `;
         contenedorLista.appendChild(elemento);
@@ -82,7 +81,6 @@ function renderizarListaCarrito() {
 function agregarAlCarrito(id) {
     if (typeof productos === 'undefined') return;
     const producto = productos.find(p => p.id === id);
-    const itemEnCarrito = Pattern => carrito.find(item => item.id === id);
 
     const itemExistente = carrito.find(item => item.id === id);
     if (itemExistente) {
@@ -118,16 +116,11 @@ document.addEventListener('DOMContentLoaded', () => {
     renderizarListaCarrito();
     actualizarContadorCarrito();
 
-    // BOTÓN ÚNICO: INICIAR SESIÓN CON GOOGLE (CON SELECCIÓN DE CUENTA)
     const btnGoogle = document.getElementById('btn-google'); 
     if (btnGoogle) {
         btnGoogle.addEventListener('click', async () => {
             const provider = new firebase.auth.GoogleAuthProvider();
-            
-            // Obliga a Google a preguntar siempre qué cuenta usar
-            provider.setCustomParameters({
-                prompt: 'select_account'
-            });
+            provider.setCustomParameters({ prompt: 'select_account' });
 
             try {
                 await auth.signInWithPopup(provider);
@@ -146,11 +139,13 @@ document.addEventListener('DOMContentLoaded', () => {
         botonConfirmar.addEventListener('click', async () => {
             const nombre = document.getElementById('nombreCliente').value;
             const whatsapp = document.getElementById('telCliente').value;
-            const fileInput = document.getElementById('archivoPago');
+            const fileInput = document.getElementById('pago-comprobante'); // 👈 CORREGIDO AQUÍ EL ID
+            
+            // Coloca tu enlace de Apps Script generado en la Screenshot_953
             const scriptURL = 'https://script.google.com/macros/s/AKfycbwJ0koWk6FwizzJKliANY0LVV8bHCdzYHxWFq47igHUCrgJ1PbIYgt4C4oyZB564D58/exec'; 
 
-            if (!nombre || !whatsapp || (fileInput && !fileInput.files[0])) {
-                return alert("Por favor, llena tus datos y sube el pago móvil.");
+            if (!nombre || !whatsapp || !fileInput || !fileInput.files[0]) {
+                return alert("Por favor, llena tus datos completos y sube el capture del pago móvil.");
             }
 
             botonConfirmar.innerText = "Enviando... ⏳";
@@ -179,18 +174,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     const modalCuerpo = document.getElementById('modal-checkout-body');
                     if(modalCuerpo) {
                         modalCuerpo.innerHTML = `
-                            <div style="text-align:center; padding:20px;">
+                            <div style="text-align:center; padding:20px; font-family: sans-serif;">
                                 <h2 style="color:#00d1b2;">¡Orden Recibida! ✅</h2>
-                                <p>Procesaremos tu pedido pronto.</p>
+                                <p>Procesaremos tu pedido pronto en Hardware Express.</p>
                                 <button onclick="location.href='index.html'" style="width:100%; padding:10px; background:#444; color:white; border:none; border-radius:6px; cursor:pointer; margin-top:15px;">Regresar al Inicio</button>
                             </div>
                         `;
                     } else {
-                        alert("¡Pedido enviado! ✅");
+                        alert("¡Pedido enviado con éxito! ✅");
                     }
                     localStorage.removeItem('carrito');
                 } catch (error) {
-                    alert("Error al enviar. Intenta de nuevo.");
+                    console.error(error);
+                    alert("Error al enviar al servidor. Intenta de nuevo.");
                     botonConfirmar.disabled = false;
                     botonConfirmar.innerText = "CONFIRMAR COMPRA";
                 }
