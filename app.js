@@ -174,11 +174,12 @@ document.addEventListener('DOMContentLoaded', () => {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            nombre: nombre,
-                            whatsapp: whatsapp,
-                            productos: productosTexto,
-                            total: totalGeneral,
-                            foto: fotoBase64
+    fecha: new Date().toLocaleString("es-VE", {timeZone: "America/Caracas"}), 
+    cliente: nombre,     
+    whatsapp: whatsapp,
+    productos: productosTexto,
+    total: totalGeneral,
+    fotos: fotoBase64
                         })
                     });
                     
