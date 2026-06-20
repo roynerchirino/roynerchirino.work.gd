@@ -1,9 +1,10 @@
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+
 // =========================================================================
-// 1. CONFIGURACIÓN ÚNICA Y CENTRALIZADA DE FIREBASE (Asegura tu clave aquí)
+// 1. CONFIGURACIÓN ÚNICA Y CENTRALIZADA DE FIREBASE
 // =========================================================================
 var firebaseConfig = {
-  apiKey: "AIzaSyBEOSg4lTMfczh1nWnhp7YD1JePH6usOHA",
+  apiKey: "AIzaSyBEOSg4lTMfczh1nWnhp7YD1JePH6usOHA", // Tu clave activa corregida
   authDomain: "hardware-express-ve.firebaseapp.com",
   projectId: "hardware-express-ve",
   storageBucket: "hardware-express-ve.firebasestorage.app",
@@ -12,13 +13,12 @@ var firebaseConfig = {
   measurementId: "G-Z81Z0YC2CC"
 };
 
-// Inicialización limpia de Firebase (Previene errores si se lee dos veces)
+// Inicialización limpia de Firebase
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 
 var auth = firebase.auth();
-
 
 // =========================================================================
 // 2. FUNCIONES DE RENDERIZADO (PRODUCTOS Y CARRITO)
@@ -82,10 +82,11 @@ function renderizarListaCarrito() {
 function agregarAlCarrito(id) {
     if (typeof productos === 'undefined') return;
     const producto = productos.find(p => p.id === id);
-    const itemEnCarrito = carrito.find(item => item.id === id);
+    const itemEnCarrito = Pattern => carrito.find(item => item.id === id);
 
-    if (itemEnCarrito) {
-        itemEnCarrito.cantidad++;
+    const itemExistente = carrito.find(item => item.id === id);
+    if (itemExistente) {
+        itemExistente.cantidad++;
     } else {
         carrito.push({ ...producto, cantidad: 1 }); 
     }
@@ -110,53 +111,20 @@ function actualizarContadorCarrito() {
 }
 
 // =========================================================================
-// 4. CAPTURA DE EVENTOS (DOM) Y AMBOS SISTEMAS DE INICIO DE SESIÓN
+// 4. CAPTURA DE EVENTOS (DOM)
 // =========================================================================
 document.addEventListener('DOMContentLoaded', () => {
     renderizarProductos();
     renderizarListaCarrito();
     actualizarContadorCarrito();
 
-    // OPCIÓN A: INICIO DE SESIÓN NORMAL (CORREO Y CONTRASEÑA EN FIREBASE)
+    // BOTÓN ÚNICO: INICIAR SESIÓN CON GOOGLE (CON SELECCIÓN DE CUENTA)
     const btnGoogle = document.getElementById('btn-google'); 
     if (btnGoogle) {
         btnGoogle.addEventListener('click', async () => {
             const provider = new firebase.auth.GoogleAuthProvider();
-            try {
-                await auth.signInWithPopup(provider);
-                alert("¡Sesión iniciada con Google con éxito! 🚀");
-                window.location.href = "index.html"; 
-            } catch (error) {
-                console.error("Error con Google Auth:", error);
-                alert("No se pudo iniciar sesión con Google: " + error.message);
-            }
-        });
-    }
-    // ENLACE CREAR CUENTA NUEVA (REGISTRO NORMAL EN FIREBASE)
-    const linkReg = document.getElementById('link-registro');
-    if (linkReg) {
-        linkReg.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const email = prompt("Introduce un correo para registrarte:");
-            const pass = prompt("Crea una contraseña (mínimo 6 caracteres):");
-            if (email && pass) {
-                try {
-                    await auth.createUserWithEmailAndPassword(email, pass);
-                    alert("¡Cuenta creada exitosamente en Firebase! 🎉");
-                    window.location.reload();
-                } catch (err) { 
-                    alert("Error al registrarse: " + err.message); 
-                }
-            }
-        });
-    }
-
-    // OPCIÓN B: INICIAR SESIÓN FLOTANTE CON GOOGLE (POPUP)
-  const btnGoogle = document.getElementById('btn-google'); 
-    if (btnGoogle) {
-        btnGoogle.addEventListener('click', async () => {
-            const provider = new firebase.auth.GoogleAuthProvider();
             
+            // Obliga a Google a preguntar siempre qué cuenta usar
             provider.setCustomParameters({
                 prompt: 'select_account'
             });
@@ -232,45 +200,38 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // =========================================================================
-// 5. ESCUCHADOR DE ESTADO DE SESIÓN (Funciona para ambos tipos de login)
+// 5. ESCUCHADOR DE ESTADO DE SESIÓN
 // =========================================================================
 auth.onAuthStateChanged((user) => {
-    const btnLogin = document.getElementById('btn-login-view');
+    const btnGoogleView = document.getElementById('btn-google');
     const perfilUser = document.getElementById('perfil-usuario');
     const userEmailSpan = document.getElementById('user-email');
 
     if (user) {
-        if(btnLogin) btnLogin.style.display = 'none';
+        if(btnGoogleView) btnGoogleView.style.display = 'none';
         if(perfilUser) perfilUser.style.display = 'flex';
-        if(userEmailSpan) userEmailSpan.innerText = user.email; // Muestra el correo logueado
+        if(userEmailSpan) userEmailSpan.innerText = user.email; 
     } else {
-        if(btnLogin) btnLogin.style.display = 'block';
+        if(btnGoogleView) btnGoogleView.style.display = 'block';
         if(perfilUser) perfilUser.style.display = 'none';
     }
 });
 
-// BOTÓN DE LOGOUT GENERAL
-document.getElementById('btn-logout')?.addEventListener('click', () => {
-    auth.signOut().then(() => { window.location.reload(); });
-});
-
-// ==========================================
-// CONTROL SEGURO DEL BOTÓN DE CERRAR SESIÓN
-// ==========================================
+// =========================================================================
+// 6. CONTROL SEGURO DE CERRAR SESIÓN
+// =========================================================================
 document.addEventListener('click', function(evento) {
-    // Buscamos si lo que tocó el usuario fue el botón con id "btn-logout"
     if (evento.target && evento.target.id === 'btn-logout') {
-        evento.preventDefault(); // Evitamos que la página haga cosas raras
+        evento.preventDefault();
         
-        // Desconectamos de Firebase
         auth.signOut()
             .then(() => {
                 alert("Sesión cerrada correctamente. ¡Vuelve pronto! 👋");
-                window.location.href = "index.html"; // Redirección limpia al inicio
+                window.location.href = "index.html"; 
             })
             .catch((error) => {
                 console.error("Error al cerrar sesión:", error);
-                alert("Hubo un problema al cerrar sesión. Inténtalo de nuevo.");
+                alert("Hubo un problema al cerrar sesión.");
             });
     }
 });
