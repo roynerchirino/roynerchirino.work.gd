@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const whatsapp = whatsappEl.value;
             
             // Tu URL real extraída de la Screenshot_960
-            const scriptURL = 'https://script.google.com/macros/s/AKfcbwJ0koWk6FwizzJKliANY0LVV8bHCdzYHxWFq47igHUCrgJ1PbIYgt4C4oyZB564D58/exec'; 
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbwJ0koWk6FwizzJKliANY0LVV8bHCdzYHxWFq47igHUCrgJ1PbIYgt4C4oyZB564D58/exec'; 
 
             if (!nombre || !whatsapp || !fileInput.files[0]) {
                 return alert("Por favor, llena tus datos completos y sube la captura del Pago Móvil.");
