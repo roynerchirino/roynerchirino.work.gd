@@ -165,10 +165,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const productosTexto = carrito.map(item => `${item.nombre} (x${item.cantidad || 1})`).join(', ');
                 const totalGeneral = carrito.reduce((t, item) => t + (item.precio * (item.cantidad || 1)), 0);
 
-                try {
+               try {
+                    // Usamos 'no-cors' porque Google Apps Script lo requiere para recibir los datos de forma segura
                     await fetch(scriptURL, {
                         method: 'POST',
-                        mode: 'no-cors',
+                        mode: 'no-cors', 
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
                         body: JSON.stringify({
                             nombre: nombre,
                             whatsapp: whatsapp,
@@ -178,6 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         })
                     });
                     
+                    // Como 'no-cors' no devuelve una respuesta legible, asumimos éxito si la red no falló
                     const modalCuerpo = document.getElementById('modal-checkout-body');
                     if(modalCuerpo) {
                         modalCuerpo.innerHTML = `
@@ -192,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     localStorage.removeItem('carrito');
                 } catch (error) {
-                    console.error(error);
+                    console.error("Error en la línea 169:", error);
                     alert("Error al enviar al servidor. Intenta de nuevo.");
                     botonConfirmar.disabled = false;
                     botonConfirmar.innerText = "CONFIRMAR COMPRA";
