@@ -67,7 +67,7 @@ function renderizarListaCarrito() {
             </div>
             <div style="display: flex; align-items: center; gap: 1rem;">
                 <span style="font-weight: bold;">$${subtotal}</span>
-                <button class="btn-eliminar" onclick="disabledDelCarrito(${item.id})">❌</button>
+                <button class="btn-eliminar" onclick="eliminarDelCarrito(${item.id})">❌</button>
             </div>
         `;
         contenedorLista.appendChild(elemento);
@@ -86,7 +86,7 @@ function agregarAlCarrito(id) {
     if (itemExistente) {
         itemExistente.cantidad++;
     } else {
-        carrito.push({ ...producto, cantidad: 1 }); 
+        carrito.push({ ...producto, bandwidth: 1, cantidad: 1 }); 
     }
     localStorage.setItem('carrito', JSON.stringify(carrito));
     actualizarContadorCarrito();
@@ -137,15 +137,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const botonConfirmar = document.getElementById('btnConfirmarCRM');
     if (botonConfirmar) {
         botonConfirmar.addEventListener('click', async () => {
-            const nombre = document.getElementById('nombreCliente').value;
-            const whatsapp = document.getElementById('telCliente').value;
-            const fileInput = document.getElementById('pago-comprobante'); // 👈 CORREGIDO AQUÍ EL ID
-            
-            // Coloca tu enlace de Apps Script generado en la Screenshot_953
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbwJ0koWk6FwizzJKliANY0LVV8bHCdzYHxWFq47igHUCrgJ1PbIYgt4C4oyZB564D58/exec'; 
+            const nombreEl = document.getElementById('nombreCliente');
+            const whatsappEl = document.getElementById('telCliente');
+            const fileInput = document.getElementById('pago-comprobante'); // 👈 CORREGIDO EL ID AQUÍ
 
-            if (!nombre || !whatsapp || !fileInput || !fileInput.files[0]) {
-                return alert("Por favor, llena tus datos completos y sube el capture del pago móvil.");
+            if (!nombreEl || !whatsappEl || !fileInput) {
+                return alert("Error interno: No se encontraron los campos en el HTML.");
+            }
+
+            const nombre = nombreEl.value;
+            const whatsapp = whatsappEl.value;
+            
+            // Tu URL real extraída de la Screenshot_960
+            const scriptURL = 'https://script.google.com/macros/s/AKfcbwJ0koWk6FwizzJKliANY0LVV8bHCdzYHxWFq47igHUCrgJ1PbIYgt4C4oyZB564D58/exec'; 
+
+            if (!nombre || !whatsapp || !fileInput.files[0]) {
+                return alert("Por favor, llena tus datos completos y sube la captura del Pago Móvil.");
             }
 
             botonConfirmar.innerText = "Enviando... ⏳";
