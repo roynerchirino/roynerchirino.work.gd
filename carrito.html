@@ -1,81 +1,42 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Carrito - Hardware Express</title>
-  <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
 
     <header>
-        <div class="header-container">
-            <h1 onclick="window.location.href='index.html'" style="cursor:pointer;">Hardware Express 🇻🇪</h1>
-            <div class="carrito-icono" onclick="window.location.href='index.html'">
+        <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: #1a1a1a;">
+            <h1 onclick="window.location.href='index.html'" style="cursor:pointer; color: white; margin: 0;">Hardware Express 🇻🇪</h1>
+            <div class="carrito-icono" onclick="window.location.href='index.html'" style="cursor: pointer; color: #00d1b2; font-weight: bold;">
                 Volver al Catálogo 📦
             </div>
         </div>
     </header>
 
-    <main>
-      <h2>Resumen de tu Pedido</h2>
+    <main style="max-width: 600px; margin: 30px auto; padding: 20px; font-family: sans-serif; color: white; background: #111; border-radius: 12px; border: 1px solid #333; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+        <h2>Resumen de tu Pedido</h2>
 
-<div id="resumen-productos" style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #eee;">
-    <div id="lista-carrito">
+        <div id="resumen-productos" style="background: #1a1a1a; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333;">
+            <div id="lista-carrito"></div>
+            
+            <hr style="border: 0; border-top: 1px solid #333; margin: 15px 0;">
+            
+            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem; color: white;">
+                <span>Total a Pagar:</span>
+                <span id="precio-total" style="color: #00d1b2;">$0</span>
+            </div>
         </div>
-    <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
-    <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem; color: #1a1a1a;">
-        <span>Total a Pagar:</span>
-        <span id="precio-total">$0</span>
-    </div>
-</div>
 
-<div id="seccion-pago" style="background: #1a1a1a; padding: 20px; border-radius: 12px; border: 1px solid #333; color: white;">
-    <h3 style="color: #00d1b2; margin-top: 0;">Confirmar Pago Móvil</h3>
-    <p style="font-size: 13px; color: #ccc;">Sube la foto del comprobante para procesar tu orden:</p>
-    <input type="file" id="archivoPago" accept="image/*" style="width: 100%; margin: 15px 0; color: #888;">
-    <button id="btnConfirmarCRM" style="width:100%; padding:14px; background:#00d1b2; color:black; border:none; font-weight:bold; border-radius:8px; cursor:pointer;">
-        FINALIZAR COMPRA ✅
-    </button>
-</div>
-    <p id="mensaje-estado" style="display:none; text-align:center; margin-top:10px; color:#00d1b2; font-size:12px;">Procesando envío... ⏳</p>
-</div>
+        <button onclick="document.getElementById('modalCRM').style.display='flex'" style="width: 100%; padding: 15px; background: #00d1b2; color: black; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s;">
+            PROCEDER AL PAGO
+        </button>
     </main>
 
-    <footer>
-        <p>&copy; 2026 Hardware Express. Alojado gratis en GitHub Pages.</p>
-    </footer>
-
-    <!-- Cargamos los mismos scripts para mantener la lógica conectada -->
-    <script src="./productos.js"></script>
-<script src="./productos.js"></script>
-
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-
-    <script src="./app.js"></script>
-    
-    <script>
-        // Esto ahora funcionará porque app.js ya estará cargado
-        renderizarListaCarrito();
-    </script>
-
-<script type="text/javascript">
-        var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-        (function(){
-        var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-        s1.async=true;
-        s1.src='https://embed.tawk.to/6a1a4fcdedf0db1c340601c4/1jprcfeqj';
-        s1.charset='UTF-8';
-        s1.setAttribute('crossorigin','*');
-        s0.parentNode.insertBefore(s1,s0);
-        })();
-    </script>
-
-    <script src="app.js"></script> 
-</body>
-</html>
-<div id="modalCRM" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; justify-content:center; align-items:center; font-family: sans-serif;">
+    <div id="modalCRM" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; justify-content:center; align-items:center; font-family: sans-serif;">
         <div id="modal-checkout-body" style="background:#1a1a1a; padding:25px; border-radius:12px; width:90%; max-width:380px; color:white; border: 1px solid #333; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
             <h3 style="margin-top:0; color:#00d1b2;">Finalizar Pedido</h3>
             <p style="font-size:14px; color:#ccc;">Ingresa tus datos y adjunta tu comprobante para registrar la orden:</p>
@@ -96,4 +57,24 @@
         </div>
     </div>
 
+    <footer>
+        <p style="text-align: center; margin-top: 40px; color: #666; font-size: 0.9rem;">&copy; 2026 Hardware Express. Alojado gratis en GitHub Pages.</p>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="productos.js"></script> <script src="app.js"></script>
+
+    <script type="text/javascript">
+        var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+        (function(){
+            var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+            s1.async=true;
+            s1.src='https://embed.tawk.to/6a1a4fcdedf0db1c340601c4/1jprcfeqj';
+            s1.charset='UTF-8';
+            s1.setAttribute('crossorigin','*');
+            s0.parentNode.insertBefore(s1,s0);
+        })();
+    </script>
 </body>
+</html>
