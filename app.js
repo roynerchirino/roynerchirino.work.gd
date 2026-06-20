@@ -118,24 +118,20 @@ document.addEventListener('DOMContentLoaded', () => {
     actualizarContadorCarrito();
 
     // OPCIÓN A: INICIO DE SESIÓN NORMAL (CORREO Y CONTRASEÑA EN FIREBASE)
-    const btnEntrar = document.getElementById('btn-entrar');
-    if (btnEntrar) {
-        btnEntrar.addEventListener('click', async () => {
-            const email = document.getElementById('login-email').value.trim();
-            const pass = document.getElementById('login-pass').value.trim();
-            
-            if(!email || !pass) return alert("Por favor completa los campos.");
-
+    const btnGoogle = document.getElementById('btn-google'); 
+    if (btnGoogle) {
+        btnGoogle.addEventListener('click', async () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
             try {
-                await auth.signInWithEmailAndPassword(email, pass);
-                alert("¡Bienvenido de nuevo! Sesión iniciada ✅");
-                window.location.href = "index.html";
-            } catch (e) { 
-                alert("Error al iniciar sesión: " + e.message); 
+                await auth.signInWithPopup(provider);
+                alert("¡Sesión iniciada con Google con éxito! 🚀");
+                window.location.href = "index.html"; 
+            } catch (error) {
+                console.error("Error con Google Auth:", error);
+                alert("No se pudo iniciar sesión con Google: " + error.message);
             }
         });
     }
-
     // ENLACE CREAR CUENTA NUEVA (REGISTRO NORMAL EN FIREBASE)
     const linkReg = document.getElementById('link-registro');
     if (linkReg) {
