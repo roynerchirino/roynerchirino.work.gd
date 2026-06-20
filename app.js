@@ -253,3 +253,24 @@ auth.onAuthStateChanged((user) => {
 document.getElementById('btn-logout')?.addEventListener('click', () => {
     auth.signOut().then(() => { window.location.reload(); });
 });
+
+// ==========================================
+// CONTROL SEGURO DEL BOTÓN DE CERRAR SESIÓN
+// ==========================================
+document.addEventListener('click', function(evento) {
+    // Buscamos si lo que tocó el usuario fue el botón con id "btn-logout"
+    if (evento.target && evento.target.id === 'btn-logout') {
+        evento.preventDefault(); // Evitamos que la página haga cosas raras
+        
+        // Desconectamos de Firebase
+        auth.signOut()
+            .then(() => {
+                alert("Sesión cerrada correctamente. ¡Vuelve pronto! 👋");
+                window.location.href = "index.html"; // Redirección limpia al inicio
+            })
+            .catch((error) => {
+                console.error("Error al cerrar sesión:", error);
+                alert("Hubo un problema al cerrar sesión. Inténtalo de nuevo.");
+            });
+    }
+});
