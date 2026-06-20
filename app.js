@@ -1,4 +1,6 @@
-// 1. CONFIGURACIÓN FORZADA Y CONTROLADA DE FIREBASE
+// =========================================================================
+// 1. CONFIGURACIÓN ÚNICA Y CENTRALIZADA DE FIREBASE (Asegura tu clave aquí)
+// =========================================================================
 var firebaseConfig = {
   apiKey: "AIzaSyBE0Sg4lTMfczh1nWnhp7YD1JePH6usOHA",
   authDomain: "hardware-express-ve.firebaseapp.com",
@@ -9,19 +11,17 @@ var firebaseConfig = {
   measurementId: "G-Z81Z0YC2CC"
 };
 
-// Reinicializa de forma limpia para asegurar que tome la API Key correcta
-if (firebase.apps.length > 0) {
-    firebase.app().delete().then(function() {
-        firebase.initializeApp(firebaseConfig);
-    });
-} else {
+// Inicialización limpia de Firebase (Previene errores si se lee dos veces)
+if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 
 var auth = firebase.auth();
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
-// 2. FUNCIONES DE RENDERIZADO
+// =========================================================================
+// 2. FUNCIONES DE RENDERIZADO (PRODUCTOS Y CARRITO)
+// =========================================================================
 function renderizarProductos() {
     const contenedor = document.getElementById('contenedor-productos');
     if (!contenedor) return;
@@ -75,7 +75,9 @@ function renderizarListaCarrito() {
     if (contenedorTotal) contenedorTotal.innerText = `$${totalGeneral}`;
 }
 
-// 3. LÓGICA DEL CARRITO
+// =========================================================================
+// 3. LÓGICA INTERNA DEL CARRITO
+// =========================================================================
 function agregarAlCarrito(id) {
     if (typeof productos === 'undefined') return;
     const producto = productos.find(p => p.id === id);
@@ -106,29 +108,56 @@ function actualizarContadorCarrito() {
     }
 }
 
-// 4. EVENTOS PRINCIPALES
+// =========================================================================
+// 4. CAPTURA DE EVENTOS (DOM) Y AMBOS SISTEMAS DE INICIO DE SESIÓN
+// =========================================================================
 document.addEventListener('DOMContentLoaded', () => {
     renderizarProductos();
     renderizarListaCarrito();
     actualizarContadorCarrito();
 
-    // LOGIN POR CORREO
+    // OPCIÓN A: INICIO DE SESIÓN NORMAL (CORREO Y CONTRASEÑA EN FIREBASE)
     const btnEntrar = document.getElementById('btn-entrar');
     if (btnEntrar) {
         btnEntrar.addEventListener('click', async () => {
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-pass').value;
+            const email = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-pass').value.trim();
+            
+            if(!email || !pass) return alert("Por favor completa los campos.");
+
             try {
                 await auth.signInWithEmailAndPassword(email, pass);
-                alert("¡Bienvenido de nuevo! ✅");
+                alert("¡Bienvenido de nuevo! Sesión iniciada ✅");
                 window.location.href = "index.html";
-            } catch (e) { alert("Error al iniciar sesión: " + e.message); }
+            } catch (e) { 
+                alert("Error al iniciar sesión: " + e.message); 
+            }
         });
     }
 
-    // BOTÓN LOGUEARSE CON GOOGLE
+    // ENLACE CREAR CUENTA NUEVA (REGISTRO NORMAL EN FIREBASE)
+    const linkReg = document.getElementById('link-registro');
+    if (linkReg) {
+        linkReg.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const email = prompt("Introduce un correo para registrarte:");
+            const pass = prompt("Crea una contraseña (mínimo 6 caracteres):");
+            if (email && pass) {
+                try {
+                    await auth.createUserWithEmailAndPassword(email, pass);
+                    alert("¡Cuenta creada exitosamente en Firebase! 🎉");
+                    window.location.reload();
+                } catch (err) { 
+                    alert("Error al registrarse: " + err.message); 
+                }
+            }
+        });
+    }
+
+    // OPCIÓN B: INICIAR SESIÓN FLOTANTE CON GOOGLE (POPUP)
     const btnGoogle = document.getElementById('btn-google'); 
     if (btnGoogle) {
+        btnGoogle.style.display = 'block'; // Nos aseguramos de que el botón sea visible
         btnGoogle.addEventListener('click', async () => {
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
@@ -142,24 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ENLACE REGISTRARSE
-    const linkReg = document.getElementById('link-registro');
-    if (linkReg) {
-        linkReg.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const email = prompt("Introduce un correo para registrarte:");
-            const pass = prompt("Crea una contraseña (mínimo 6 caracteres):");
-            if (email && pass) {
-                try {
-                    await auth.createUserWithEmailAndPassword(email, pass);
-                    alert("¡Cuenta creada exitosamente! 🎉");
-                    window.location.reload();
-                } catch (err) { alert("Error al registrarse: " + err.message); }
-            }
-        });
-    }
-
-    // INTEGRACIÓN CON CRM (GOOGLE SHEETS)
+    // INTEGRACIÓN CON TU CRM (GOOGLE SHEETS)
     const botonConfirmar = document.getElementById('btnConfirmarCRM');
     if (botonConfirmar) {
         botonConfirmar.addEventListener('click', async () => {
@@ -218,7 +230,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// 5. PERFIL Y CONTROL DE SESIÓN
+// =========================================================================
+// 5. ESCUCHADOR DE ESTADO DE SESIÓN (Funciona para ambos tipos de login)
+// =========================================================================
 auth.onAuthStateChanged((user) => {
     const btnLogin = document.getElementById('btn-login-view');
     const perfilUser = document.getElementById('perfil-usuario');
@@ -227,13 +241,14 @@ auth.onAuthStateChanged((user) => {
     if (user) {
         if(btnLogin) btnLogin.style.display = 'none';
         if(perfilUser) perfilUser.style.display = 'flex';
-        if(userEmailSpan) userEmailSpan.innerText = user.email;
+        if(userEmailSpan) userEmailSpan.innerText = user.email; // Muestra el correo logueado
     } else {
         if(btnLogin) btnLogin.style.display = 'block';
         if(perfilUser) perfilUser.style.display = 'none';
     }
 });
 
+// BOTÓN DE LOGOUT GENERAL
 document.getElementById('btn-logout')?.addEventListener('click', () => {
     auth.signOut().then(() => { window.location.reload(); });
 });
