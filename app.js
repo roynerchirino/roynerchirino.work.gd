@@ -152,11 +152,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // OPCIÓN B: INICIAR SESIÓN FLOTANTE CON GOOGLE (POPUP)
-    const btnGoogle = document.getElementById('btn-google'); 
+  const btnGoogle = document.getElementById('btn-google'); 
     if (btnGoogle) {
-        btnGoogle.style.display = 'block'; // Nos aseguramos de que el botón sea visible
         btnGoogle.addEventListener('click', async () => {
             const provider = new firebase.auth.GoogleAuthProvider();
+            
+            provider.setCustomParameters({
+                prompt: 'select_account'
+            });
+
             try {
                 await auth.signInWithPopup(provider);
                 alert("¡Sesión iniciada con Google con éxito! 🚀");
