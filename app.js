@@ -3,7 +3,7 @@ let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 // 1. CONFIGURACIÓN ÚNICA Y CENTRALIZADA DE FIREBASE (Asegura tu clave aquí)
 // =========================================================================
 var firebaseConfig = {
-  apiKey: "AIzaSyBE0Sg4lTMfczh1nWnhp7YD1JePH6usOHA",
+  apiKey: "AIzaSyBEOSg4lTMfczh1nWnhp7YD1JePH6usOHA",
   authDomain: "hardware-express-ve.firebaseapp.com",
   projectId: "hardware-express-ve",
   storageBucket: "hardware-express-ve.firebasestorage.app",
