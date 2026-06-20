@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const nombre = document.getElementById('nombreCliente').value;
             const whatsapp = document.getElementById('telCliente').value;
             const fileInput = document.getElementById('archivoPago');
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbzI2_1quYoA9UT0ISASTw3nhQEg2uvkxXDRIX4jHIH17ayl2nyP1i8o6edbuzROY2EZ/exec'; 
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbwJ0koWk6FwizzJKliANY0LVV8bHCdzYHxWFq47igHUCrgJ1PbIYgt4C4oyZB564D58/exec'; 
 
             if (!nombre || !whatsapp || (fileInput && !fileInput.files[0])) {
                 return alert("Por favor, llena tus datos y sube el pago móvil.");
