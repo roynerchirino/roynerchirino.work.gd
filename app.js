@@ -249,15 +249,15 @@ var Tawk_API = Tawk_API || {};
 
 Tawk_API.onAppLoaded = function(){
     console.log("Tawk.to y la IA están activos en Hardware Express 🚀");
-};
 
-Tawk_API.onMessageSent = function(data){
-    const mensajeUsuario = data.message;
-    
-    // Evita bucles: si el mensaje proviene de un agente o espectador, no responde
-    if (data.isSpectator || data.publisher === 'agent') return;
+    Tawk_API.onMessageSent = function(data){
+        const mensajeUsuario = data.message;
+        
+        // Evita bucles: si el mensaje proviene de un agente o espectador, no responde
+        if (data.isSpectator || data.publisher === 'agent') return;
 
-    consultarIA(mensajeUsuario);
+        consultarIA(mensajeUsuario);
+    };
 };
 
 async function consultarIA(pregunta) {
