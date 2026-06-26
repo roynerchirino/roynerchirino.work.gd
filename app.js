@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
         botonConfirmar.addEventListener('click', async () => {
             const nombreEl = document.getElementById('nombreCliente');
             const whatsappEl = document.getElementById('telCliente');
-            const fileInput = document.getElementById('pago-comprobante'); // 👈 CORREGIDO EL ID AQUÍ
+            const fileInput = document.getElementById('pago-comprobante'); 
 
             if (!nombreEl || !whatsappEl || !fileInput) {
                 return alert("Error interno: No se encontraron los campos en el HTML.");
@@ -148,7 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const nombre = nombreEl.value;
             const whatsapp = whatsappEl.value;
             
-            // Tu URL real extraída de la Screenshot_960
             const scriptURL = 'https://script.google.com/macros/s/AKfycbwJ0koWk6FwizzJKliANY0LVV8bHCdzYHxWFq47igHUCrgJ1PbIYgt4C4oyZB564D58/exec'; 
 
             if (!nombre || !whatsapp || !fileInput.files[0]) {
@@ -166,7 +165,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const totalGeneral = carrito.reduce((t, item) => t + (item.precio * (item.cantidad || 1)), 0);
 
                try {
-                    // Usamos 'no-cors' porque Google Apps Script lo requiere para recibir los datos de forma segura
                     await fetch(scriptURL, {
                         method: 'POST',
                         mode: 'no-cors', 
@@ -174,16 +172,15 @@ document.addEventListener('DOMContentLoaded', () => {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-    fecha: new Date().toLocaleString("es-VE", {timeZone: "America/Caracas"}), 
-    cliente: nombre,     
-    whatsapp: whatsapp,
-    productos: productosTexto,
-    total: totalGeneral,
-    fotos: fotoBase64
+                            fecha: new Date().toLocaleString("es-VE", {timeZone: "America/Caracas"}), 
+                            cliente: nombre,     
+                            whatsapp: whatsapp,
+                            productos: productosTexto,
+                            total: totalGeneral,
+                            fotos: fotoBase64
                         })
                     });
                     
-                    // Como 'no-cors' no devuelve una respuesta legible, asumimos éxito si la red no falló
                     const modalCuerpo = document.getElementById('modal-checkout-body');
                     if(modalCuerpo) {
                         modalCuerpo.innerHTML = `
@@ -244,3 +241,59 @@ document.addEventListener('click', function(evento) {
             });
     }
 });
+
+// =========================================================================
+// 7. ASISTENTE INTELIGENTE PARA TAWK.TO (INTEGRACIÓN GEMINI IA)
+// =========================================================================
+var Tawk_API = Tawk_API || {};
+
+Tawk_API.onAppLoaded = function(){
+    console.log("Tawk.to y la IA están activos en Hardware Express 🚀");
+};
+
+Tawk_API.onMessageSent = function(data){
+    const mensajeUsuario = data.message;
+    
+    // Evita bucles: si el mensaje proviene de un agente o espectador, no responde
+    if (data.isSpectator || data.publisher === 'agent') return;
+
+    consultarIA(mensajeUsuario);
+};
+
+async function consultarIA(pregunta) {
+    const API_KEY = 'AQ.Ab8RN6LpIeyoUqo-Rqy252DNdCrxNKHZo-NC4NrfGJ5wRikrAw'; 
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+
+    const instruccionesSistema = "Eres un experto en hardware de computadoras y soporte técnico de la tienda 'Hardware Express'. Responde de forma muy amable, concisa, al grano y con un toque de estilo venezolano (usa palabras como 'mano', 'fino', 'pana' de forma natural). Solo hablas de tecnología, componentes que estén en una tienda de computación y armado de PC.";
+
+    const datos = {
+        contents: [{
+            parts: [{ text: `${instruccionesSistema}\n\nCliente pregunta: ${pregunta}` }]
+        }]
+    };
+
+    try {
+        const respuesta = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        });
+
+        const resultado = await respuesta.json();
+        const textoIA = resultado.candidates[0].content.parts[0].text;
+
+        // Inyecta el mensaje de la IA directo en el chat del cliente
+        Tawk_API.addMessage({
+            text: textoIA,
+            sender: {
+                name: 'Asistente Virtual (Hardware Express)',
+                type: 'agent'
+            }
+        }, function(error){
+            if(error) console.error("Error al mostrar mensaje de la IA:", error);
+        });
+
+    } catch (error) {
+        console.error("Error conectando con Gemini:", error);
+    }
+}
