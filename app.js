@@ -1,3 +1,4 @@
+JavaScript
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
 // =========================================================================
@@ -243,7 +244,7 @@ document.addEventListener('click', function(evento) {
 });
 
 // =========================================================================
-// 7. ASISTENTE INTELIGENTE PARA TAWK.TO (INTEGRACIÓN GEMINI IA)
+// 7. ASISTENTE INTELIGENTE PARA TAWK.TO (INTEGRACIÓN GEMINI IA VIA WEBHOOK)
 // =========================================================================
 var Tawk_API = Tawk_API || {};
 
@@ -253,7 +254,7 @@ Tawk_API.onAppLoaded = function(){
     Tawk_API.onMessageSent = function(data){
         const mensajeUsuario = data.message;
         
-        // Evita bucles: si el mensaje proviene de un agente o espectador, no responde
+        // Evita bucles infinitos: no responde si el mensaje viene del mismo agente o espectador
         if (data.isSpectator || data.publisher === 'agent') return;
 
         consultarIA(mensajeUsuario);
@@ -261,39 +262,29 @@ Tawk_API.onAppLoaded = function(){
 };
 
 async function consultarIA(pregunta) {
-    const API_KEY = 'AQ.Ab8RN6LpIeyoUqo-Rqy252DNdCrxNKHZo-NC4NrfGJ5wRikrAw'; 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-
-    const instruccionesSistema = "Eres un experto en hardware de computadoras y soporte técnico de la tienda 'Hardware Express'. Responde de forma muy amable, concisa, al grano y con un toque de estilo venezolano (usa palabras como 'mano', 'fino', 'pana' de forma natural). Solo hablas de tecnología, componentes que estén en una tienda de computación y armado de PC.";
-
-    const datos = {
-        contents: [{
-            parts: [{ text: `${instruccionesSistema}\n\nCliente pregunta: ${pregunta}` }]
-        }]
-    };
+    // URL de tu Apps Script real conectada de servidor a servidor
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbu7nnAqaeYvHS5FKIONZaWF8OCVmyiiismbBbdwRN5POBu03RrO5yEVr8T8PzIAfjY/exec'; 
 
     try {
-        const respuesta = await fetch(url, {
+        const respuesta = await fetch(scriptURL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(datos)
+            body: JSON.stringify({ pregunta: pregunta })
         });
 
         const resultado = await respuesta.json();
-        const textoIA = resultado.candidates[0].content.parts[0].text;
-
-        // Inyecta el mensaje de la IA directo en el chat del cliente
-        Tawk_API.addMessage({
-            text: textoIA,
-            sender: {
-                name: 'Asistente Virtual (Hardware Express)',
-                type: 'agent'
-            }
-        }, function(error){
-            if(error) console.error("Error al mostrar mensaje de la IA:", error);
-        });
-
+        
+        if (resultado.respuesta) {
+            Tawk_API.addMessage({
+                text: resultado.respuesta,
+                sender: {
+                    name: 'Asistente Virtual (Hardware Express)',
+                    type: 'agent'
+                }
+            }, function(error){
+                if(error) console.error("Error al mostrar mensaje de la IA:", error);
+            });
+        }
     } catch (error) {
-        console.error("Error conectando con Gemini:", error);
+        console.error("Error conectando con el puente de la IA:", error);
     }
 }
